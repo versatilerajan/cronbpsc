@@ -189,15 +189,17 @@
          onAuthStateChanged, signOut } = window.firebaseModules;
 
   // Your Firebase Config (already correct)
-  const firebaseConfig = {
-    apiKey: "AIza232bdbssrp4R_M1XTLBq6zHfZcf0",
-    authDomain: "cronbpsc.firebaseapp.com",
-    projectId: "cronbpsc",
-    storageBucket: "cronbpsc.firebasestorage.app",
-    messagingSenderId: "669232323422",
-    appId: "1:66923138072:web:ea79ce45bc8c7c15c2476d",
-    measurementId: "G-Y37J7BL805"
-  };
+
+const firebaseConfig = {
+  apiKey: "AIzaSyALLdLzpaEE6B0rp4R_M1XTLBq6zHfZcf0",
+  authDomain: "cronbpsc.firebaseapp.com",
+  projectId: "cronbpsc",
+  storageBucket: "cronbpsc.firebasestorage.app",
+  messagingSenderId: "66923138072",
+  appId: "1:66923138072:web:ea79ce45bc8c7c15c2476d",
+  measurementId: "G-Y37J7BL805"
+};
+
 
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
