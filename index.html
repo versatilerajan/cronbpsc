@@ -85,34 +85,55 @@
       background: var(--bg-overlay);
       border: 2px solid var(--border);
       border-radius: 6px;
-      padding: 1.8rem;
+      padding: 2rem;
       margin-bottom: 2rem;
       backdrop-filter: blur(8px);
     }
+    .status-message {
+      font-size: 1.25rem;
+      font-weight: 600;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin: 2rem 0;
+      text-align: center;
+      background: rgba(30,41,59,0.7);
+      border: 1px solid var(--border);
+    }
+    .status-not-started {
+      background: rgba(245,158,11,0.15);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .status-no-test {
+      background: rgba(239,68,68,0.15);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
     .question {
       margin: 1.5rem 0;
-      padding: 1.2rem;
+      padding: 1.5rem;
       background: rgba(30,41,59,0.6);
       border-radius: 6px;
       border: 1px solid var(--border);
     }
-    .question h3 { margin-bottom: 1rem; color: var(--accent); }
+    .question h3 { margin-bottom: 1.2rem; color: var(--accent); font-size: 1.15rem; }
     .option {
       display: block;
-      margin: 0.6rem 0;
-      padding: 0.8rem;
+      margin: 0.8rem 0;
+      padding: 0.9rem;
       background: var(--secondary);
       border: 1px solid var(--border);
       border-radius: 4px;
       cursor: pointer;
     }
-    .option input { margin-right: 0.8rem; }
+    .option input { margin-right: 1rem; }
     .option:hover { border-color: var(--accent); }
     .alert {
       padding: 1rem;
       border-radius: 4px;
       margin: 1rem 0;
       font-weight: 600;
+      text-align: center;
     }
     .alert-success { background: rgba(16,185,129,0.2); color: var(--success); border: 1px solid var(--success); }
     .alert-error   { background: rgba(239,68,68,0.2); color: var(--danger); border: 1px solid var(--danger); }
@@ -145,7 +166,7 @@
     </div>
   </header>
 
-  <!-- Login / Loading area -->
+  <!-- Login Section -->
   <div id="loginSection" class="card">
     <h2 style="text-align:center; color:var(--accent);">Welcome to Daily Practice</h2>
     <p style="text-align:center; color:var(--text-secondary); margin:1.5rem 0;">
@@ -157,29 +178,32 @@
     <div id="authMessage" style="text-align:center; margin-top:1.5rem; min-height:1.5rem;"></div>
   </div>
 
-  <!-- Test Area -->
+  <!-- Test / Status Section -->
   <div id="testSection" class="hidden">
     <div class="card">
-      <h2 id="testTitle">Loading test...</h2>
-      <p id="testInfo" style="color:var(--text-secondary);"></p>
+      <h2 id="testTitle">Loading today's test...</h2>
+      <div id="statusMessage" class="status-message hidden"></div>
+      <p id="testInfo" style="color:var(--text-secondary); text-align:center; margin:1rem 0;"></p>
       <div id="questionsContainer"></div>
-      <button id="btnSubmitTest" class="btn btn-submit hidden">Submit Test</button>
+      <button id="btnSubmitTest" class="btn btn-submit hidden" style="margin-top:2rem;">Submit Test</button>
       <div id="submitMessage" class="alert hidden"></div>
     </div>
   </div>
 
-  <!-- Result -->
+  <!-- Result Section -->
   <div id="resultSection" class="hidden card">
-    <h2 style="color:var(--success);">Test Completed!</h2>
-    <p id="resultScore" style="font-size:1.4rem; margin:1rem 0;"></p>
-    <p id="resultRank"></p>
-    <button onclick="location.reload()" class="btn btn-primary" style="margin-top:1rem;">Back to Home</button>
+    <h2 style="color:var(--success); text-align:center;">Test Completed!</h2>
+    <p id="resultScore" style="font-size:1.6rem; text-align:center; margin:1.5rem 0;"></p>
+    <p id="resultRank" style="text-align:center; font-size:1.2rem;"></p>
+    <button onclick="location.reload()" class="btn btn-primary" style="display:block; margin:2rem auto; width:220px;">
+      Back to Home
+    </button>
   </div>
 
-  <!-- Leaderboard -->
+  <!-- Leaderboard Section -->
   <div id="leaderboardSection" class="card hidden">
-    <h2>Leaderboard - Today's Test</h2>
-    <div id="leaderboard"></div>
+    <h2 style="text-align:center;">Leaderboard - Today's Test</h2>
+    <div id="leaderboard" style="margin-top:1.5rem;"></div>
   </div>
 
 </div>
@@ -188,31 +212,26 @@
   const { initializeApp, getAnalytics, getAuth, signInWithPopup, GoogleAuthProvider,
          onAuthStateChanged, signOut } = window.firebaseModules;
 
-  // Your Firebase Config (already correct)
-
-const firebaseConfig = {
-  apiKey: "AIzaSyALLdLzpaEE6B0rp4R_M1XTLBq6zHfZcf0",
-  authDomain: "cronbpsc.firebaseapp.com",
-  projectId: "cronbpsc",
-  storageBucket: "cronbpsc.firebasestorage.app",
-  messagingSenderId: "66923138072",
-  appId: "1:66923138072:web:ea79ce45bc8c7c15c2476d",
-  measurementId: "G-Y37J7BL805"
-};
-
+  const firebaseConfig = {
+    apiKey: "AIza232bdbssrp4R_M1XTLBq6zHfZcf0",
+    authDomain: "cronbpsc.firebaseapp.com",
+    projectId: "cronbpsc",
+    storageBucket: "cronbpsc.firebasestorage.app",
+    messagingSenderId: "669232323422",
+    appId: "1:66923138072:web:ea79ce45bc8c7c15c2476d",
+    measurementId: "G-Y37J7BL805"
+  };
 
   const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
+  getAnalytics(app);
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
 
-  // ─── Backend URL (now using your real one) ────────────────────
   const API_URL = "https://cronuserbackend.vercel.app";
 
   let currentTestId = null;
   let userAnswers = {};
 
-  // ─── Auth State ───────────────────────────────────────────────
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       document.getElementById("userDisplay").textContent = user.displayName || user.email;
@@ -233,75 +252,78 @@ const firebaseConfig = {
     }
   });
 
-  // ─── Google Login ─────────────────────────────────────────────
   document.getElementById("btnGoogleLogin").onclick = async () => {
     try {
       await signInWithPopup(auth, provider);
-      // onAuthStateChanged will handle the rest
     } catch (error) {
-      console.error("Google Sign-In Error:", error.code, error.message);
+      console.error("Google Sign-In Error:", error);
       document.getElementById("authMessage").innerHTML = 
-        `<span style="color:#ef4444;">Login failed: ${error.message}</span>`;
+        `<span style="color:var(--danger);">Login failed: ${error.message}</span>`;
     }
   };
 
-  // ─── Logout ───────────────────────────────────────────────────
   document.getElementById("btnLogout").onclick = async () => {
     await signOut(auth);
   };
 
-  // ─── Load Today's Test ────────────────────────────────────────
   async function loadTodayTest() {
-    const msgEl = document.getElementById("submitMessage");
-    msgEl.classList.remove("hidden");
-    msgEl.className = "alert";
-    msgEl.textContent = "Loading today's test...";
+    const statusEl = document.getElementById("statusMessage");
+    const titleEl = document.getElementById("testTitle");
+    const infoEl = document.getElementById("testInfo");
+    const container = document.getElementById("questionsContainer");
+    const submitBtn = document.getElementById("btnSubmitTest");
+
+    statusEl.classList.remove("hidden", "not-started", "no-test");
+    statusEl.textContent = "Loading today's test...";
+    titleEl.textContent = "Daily Test";
+    infoEl.textContent = "";
+    container.innerHTML = "";
+    submitBtn.classList.add("hidden");
 
     try {
       const token = await auth.currentUser.getIdToken();
-      console.log("Fetching test from:", `${API_URL}/user/today-test`);
-      console.log("ID Token (first 30 chars):", token.substring(0,30) + "...");
-
       const res = await fetch(`${API_URL}/user/today-test`, {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-        cache: "no-store"
+        headers: { "Authorization": `Bearer ${token}` }
       });
 
-      console.log("Response status:", res.status);
-
       if (!res.ok) {
-        let errData;
-        try { errData = await res.json(); } catch {}
-        throw new Error(errData?.message || `HTTP ${res.status}`);
+        if (res.status === 404) {
+          statusEl.textContent = "No test available today.";
+          statusEl.classList.add("no-test");
+          titleEl.textContent = "No Test Today";
+          return;
+        }
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.message || `Server error (${res.status})`);
       }
 
       const data = await res.json();
 
       if (data.status === "not_started") {
-        msgEl.textContent = "Test has not started yet. Please check back later.";
-        msgEl.className = "alert alert-error";
+        statusEl.textContent = "Test has not started yet. Please check back later.";
+        statusEl.classList.add("not-started");
+        titleEl.textContent = data.title || "Upcoming Daily Test";
+        infoEl.textContent = data.startTime 
+          ? `Starts at: ${new Date(data.startTime).toLocaleString()}`
+          : "";
         return;
       }
 
       if (data.status !== "active" || !data.testId) {
-        msgEl.textContent = data.message || "No active test found today.";
+        statusEl.textContent = "No active test right now.";
         return;
       }
 
-      currentTestId = data.testId;
-      document.getElementById("testTitle").textContent = data.title || "Daily Test";
-      document.getElementById("testInfo").textContent = 
-        `Total Questions: ${data.totalQuestions || "?"} • Date: ${new Date().toLocaleDateString()}`;
+      // Active test
+      statusEl.classList.add("hidden");
+      titleEl.textContent = data.title || "BPSC Daily Test";
+      infoEl.textContent = `Total Questions: ${data.totalQuestions || "?"}`;
 
-      const container = document.getElementById("questionsContainer");
-      container.innerHTML = "";
+      currentTestId = data.testId;
+      userAnswers = {};
 
       if (!data.questions?.length) {
-        container.innerHTML = "<p style='color:#ef4444;'>No questions available.</p>";
+        container.innerHTML = '<p style="color:var(--danger); text-align:center;">No questions loaded.</p>';
       } else {
         data.questions.forEach(q => {
           const div = document.createElement("div");
@@ -321,30 +343,25 @@ const firebaseConfig = {
         });
       }
 
-      document.getElementById("btnSubmitTest").classList.remove("hidden");
-      msgEl.classList.add("hidden");
-
-      // Load leaderboard too
+      submitBtn.classList.remove("hidden");
       loadLeaderboard(currentTestId);
-
     } catch (err) {
       console.error("Load test error:", err);
-      msgEl.textContent = err.message || "Failed to load test. Please try again.";
-      msgEl.className = "alert alert-error";
+      statusEl.textContent = err.message || "Failed to load test. Please try again.";
+      statusEl.classList.add("no-test");
     }
   }
 
-  // ─── Submit Test ──────────────────────────────────────────────
   document.getElementById("btnSubmitTest").onclick = async () => {
-    const answeredCount = Object.keys(userAnswers).length;
+    const answered = Object.keys(userAnswers).length;
     const total = document.querySelectorAll(".question").length;
 
-    if (answeredCount < total) {
-      alert(`Please answer all ${total} questions before submitting. (${answeredCount} answered)`);
+    if (answered < total) {
+      alert(`Please answer all ${total} questions (${answered} answered so far).`);
       return;
     }
 
-    if (!confirm("Submit test? You cannot change answers after submission.")) return;
+    if (!confirm("Submit your answers? You cannot change them later.")) return;
 
     const answersArray = Object.entries(userAnswers).map(([questionId, selectedOption]) => ({
       questionId,
@@ -370,9 +387,9 @@ const firebaseConfig = {
       const data = await res.json();
 
       document.getElementById("resultScore").textContent = 
-        `Your Score: ${data.score} / ${data.totalQuestions}`;
+        `Your Score: ${data.score} out of ${data.totalQuestions}`;
       document.getElementById("resultRank").textContent = 
-        `Rank: ${data.rank} (based on score)`;
+        `Your Rank: ${data.rank}`;
 
       document.getElementById("testSection").classList.add("hidden");
       document.getElementById("resultSection").classList.remove("hidden");
@@ -386,18 +403,17 @@ const firebaseConfig = {
     }
   };
 
-  // ─── Leaderboard ──────────────────────────────────────────────
   async function loadLeaderboard(testId) {
     try {
       const res = await fetch(`${API_URL}/user/leaderboard/${testId}`);
-      if (!res.ok) throw new Error("Leaderboard fetch failed");
+      if (!res.ok) return;
 
       const users = await res.json();
       const container = document.getElementById("leaderboard");
       container.innerHTML = "";
 
       if (!users.length) {
-        container.innerHTML = "<p>No results submitted yet.</p>";
+        container.innerHTML = "<p>No results yet.</p>";
         return;
       }
 
@@ -421,7 +437,6 @@ const firebaseConfig = {
       document.getElementById("leaderboardSection").classList.remove("hidden");
     } catch (err) {
       console.error("Leaderboard error:", err);
-      document.getElementById("leaderboard").innerHTML = "<p>Could not load leaderboard.</p>";
     }
   }
 </script>
