@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BPSC Daily Test - User Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+  
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-analytics.js";
+    import { 
+      getAuth, 
+      signInWithPopup, 
+      GoogleAuthProvider, 
+      onAuthStateChanged, 
+      signOut 
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+    window.firebaseModules = {
+      initializeApp, getAnalytics, getAuth, signInWithPopup, GoogleAuthProvider,
+      onAuthStateChanged, signOut
+    };
+  </script>
+
+  <style>
+    :root {
+      --primary: #0f172a;
+      --secondary: #1e293b;
+      --accent: #f59e0b;
+      --success: #10b981;
+      --danger: #ef4444;
+      --text: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --border: #334155;
+      --bg-overlay: rgba(15, 23, 42, 0.92);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'JetBrains Mono', monospace;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: 
+        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(248,250,252,0.03) 2px, rgba(248,250,252,0.03) 4px),
+        repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(248,250,252,0.03) 2px, rgba(248,250,252,0.03) 4px);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .container { max-width: 1100px; margin: 0 auto; padding: 1.5rem; position: relative; z-index: 2; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 0;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 2rem;
+    }
+    h1 { font-family: 'Playfair Display', serif; font-size: 2.8rem; color: var(--accent); letter-spacing: -1px; }
+    .user-info { font-size: 0.95rem; color: var(--text-secondary); }
+    .btn {
+      padding: 0.7rem 1.6rem;
+      border: none;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-google { background: #4285f4; color: white; }
+    .btn-google:hover { background: #357ae8; }
+    .btn-logout { background: var(--danger); color: white; }
+    .btn-logout:hover { background: #c53030; }
+    .btn-submit { background: var(--success); color: white; width: 100%; font-size: 1.1rem; padding: 1rem; }
+    .btn-submit:hover { background: #059669; }
+    .hidden { display: none !important; }
+    .card {
+      background: var(--bg-overlay);
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      padding: 1.8rem;
+      margin-bottom: 2rem;
+      backdrop-filter: blur(8px);
+    }
+    .question {
+      margin: 1.5rem 0;
+      padding: 1.2rem;
+      background: rgba(30,41,59,0.6);
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+    .question h3 { margin-bottom: 1rem; color: var(--accent); }
+    .option {
+      display: block;
+      margin: 0.6rem 0;
+      padding: 0.8rem;
+      background: var(--secondary);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .option input { margin-right: 0.8rem; }
+    .option:hover { border-color: var(--accent); }
+    .alert {
+      padding: 1rem;
+      border-radius: 4px;
+      margin: 1rem 0;
+      font-weight: 600;
+    }
+    .alert-success { background: rgba(16,185,129,0.2); color: var(--success); border: 1px solid var(--success); }
+    .alert-error   { background: rgba(239,68,68,0.2); color: var(--danger); border: 1px solid var(--danger); }
+    #leaderboard table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    #leaderboard th, #leaderboard td {
+      padding: 0.8rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    #leaderboard th { color: var(--accent); }
+    @media (max-width: 768px) {
+      h1 { font-size: 2.2rem; }
+      .container { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>BPSC Daily Test</h1>
+    <div class="user-info">
+      <span id="userDisplay">Not logged in</span>
+      <button id="btnLogout" class="btn btn-logout hidden">Logout</button>
+    </div>
+  </header>
+
+  <!-- Login / Loading area -->
+  <div id="loginSection" class="card">
+    <h2 style="text-align:center; color:var(--accent);">Welcome to Daily Practice</h2>
+    <p style="text-align:center; color:var(--text-secondary); margin:1.5rem 0;">
+      Sign in with Google to start today's test
+    </p>
+    <button id="btnGoogleLogin" class="btn btn-google" style="display:block; margin:0 auto; width:240px;">
+      Sign in with Google
+    </button>
+    <div id="authMessage" style="text-align:center; margin-top:1.5rem; min-height:1.5rem;"></div>
+  </div>
+
+  <!-- Test Area (hidden until logged in and test available) -->
+  <div id="testSection" class="hidden">
+    <div class="card">
+      <h2 id="testTitle">Loading test...</h2>
+      <p id="testInfo" style="color:var(--text-secondary);"></p>
+      <div id="questionsContainer"></div>
+      <button id="btnSubmitTest" class="btn btn-submit hidden">Submit Test</button>
+      <div id="submitMessage" class="alert hidden"></div>
+    </div>
+  </div>
+
+  <!-- Result & Leaderboard -->
+  <div id="resultSection" class="hidden card">
+    <h2 style="color:var(--success);">Test Completed!</h2>
+    <p id="resultScore" style="font-size:1.4rem; margin:1rem 0;"></p>
+    <p id="resultRank"></p>
+    <button onclick="location.reload()" class="btn btn-primary" style="margin-top:1rem;">Back to Home</button>
+  </div>
+
+  <div id="leaderboardSection" class="card hidden">
+    <h2>Leaderboard - Today's Test</h2>
+    <div id="leaderboard"></div>
+  </div>
+
+</div>
+
+<script type="module">
+  const { initializeApp, getAnalytics, getAuth, signInWithPopup, GoogleAuthProvider,
+         onAuthStateChanged, signOut } = window.firebaseModules;
+
+  // ─── Your Firebase Config ─────────────────────────────────────
+  
+const firebaseConfig = {
+  apiKey: "AIzaSyALLdLzpaEE6B0rp4R_M1XTLBq6zHfZcf0",
+  authDomain: "cronbpsc.firebaseapp.com",
+  projectId: "cronbpsc",
+  storageBucket: "cronbpsc.firebasestorage.app",
+  messagingSenderId: "66923138072",
+  appId: "1:66923138072:web:ea79ce45bc8c7c15c2476d",
+  measurementId: "G-Y37J7BL805"
+};
+
+
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  // ─── Backend URL ──────────────────────────────────────────────
+  const API_URL = "https://your-user-backend-domain.vercel.app";   // ← CHANGE THIS
+
+  let currentTestId = null;
+  let userAnswers = {};
+
+  // ─── Auth State Listener ──────────────────────────────────────
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      document.getElementById("userDisplay").textContent = user.displayName || user.email;
+      document.getElementById("btnGoogleLogin").classList.add("hidden");
+      document.getElementById("btnLogout").classList.remove("hidden");
+      document.getElementById("loginSection").classList.add("hidden");
+      document.getElementById("testSection").classList.remove("hidden");
+
+      await loadTodayTest();
+    } else {
+      document.getElementById("userDisplay").textContent = "Not logged in";
+      document.getElementById("btnGoogleLogin").classList.remove("hidden");
+      document.getElementById("btnLogout").classList.add("hidden");
+      document.getElementById("loginSection").classList.remove("hidden");
+      document.getElementById("testSection").classList.add("hidden");
+      document.getElementById("resultSection").classList.add("hidden");
+      document.getElementById("leaderboardSection").classList.add("hidden");
+    }
+  });
+
+  // ─── Google Login ─────────────────────────────────────────────
+  document.getElementById("btnGoogleLogin").onclick = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      // user is now signed in → onAuthStateChanged will handle UI
+    } catch (error) {
+      console.error("Google Sign-In Error:", error);
+      document.getElementById("authMessage").innerHTML = 
+        `<span style="color:#ef4444;">Login failed: ${error.message}</span>`;
+    }
+  };
+
+  // ─── Logout ───────────────────────────────────────────────────
+  document.getElementById("btnLogout").onclick = async () => {
+    await signOut(auth);
+  };
+
+  // ─── Load Today's Test ────────────────────────────────────────
+  async function loadTodayTest() {
+    const msgEl = document.getElementById("submitMessage");
+    msgEl.classList.remove("hidden");
+    msgEl.className = "alert";
+    msgEl.textContent = "Loading today's test...";
+
+    try {
+      const token = await auth.currentUser.getIdToken();
+      const res = await fetch(`${API_URL}/user/today-test`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Failed to load test");
+      }
+
+      const data = await res.json();
+
+      if (data.status === "not_started") {
+        msgEl.textContent = "Test not started yet. Come back later!";
+        msgEl.className = "alert alert-error";
+        return;
+      }
+
+      if (data.status !== "active") {
+        msgEl.textContent = "No test available today.";
+        return;
+      }
+
+      currentTestId = data.testId;
+      document.getElementById("testTitle").textContent = data.title;
+      document.getElementById("testInfo").textContent = 
+        `Total Questions: ${data.totalQuestions} • Date: ${new Date().toLocaleDateString()}`;
+
+      const container = document.getElementById("questionsContainer");
+      container.innerHTML = "";
+
+      data.questions.forEach(q => {
+        const div = document.createElement("div");
+        div.className = "question";
+        div.innerHTML = `
+          <h3>Q${q.questionNumber}. ${q.questionStatement}</h3>
+          <label class="option"><input type="radio" name="q_${q._id}" value="option1"> ${q.options.option1}</label>
+          <label class="option"><input type="radio" name="q_${q._id}" value="option2"> ${q.options.option2}</label>
+          <label class="option"><input type="radio" name="q_${q._id}" value="option3"> ${q.options.option3}</label>
+          <label class="option"><input type="radio" name="q_${q._id}" value="option4"> ${q.options.option4}</label>
+        `;
+        container.appendChild(div);
+
+        // Track answer change
+        div.querySelectorAll("input").forEach(inp => {
+          inp.onchange = () => {
+            userAnswers[q._id] = inp.value;
+          };
+        });
+      });
+
+      document.getElementById("btnSubmitTest").classList.remove("hidden");
+      msgEl.classList.add("hidden");
+
+      // Also load leaderboard
+      loadLeaderboard(currentTestId);
+    } catch (err) {
+      console.error(err);
+      msgEl.textContent = err.message || "Error loading test";
+      msgEl.className = "alert alert-error";
+    }
+  }
+
+  // ─── Submit Test ──────────────────────────────────────────────
+  document.getElementById("btnSubmitTest").onclick = async () => {
+    if (Object.keys(userAnswers).length < 50) {  // adjust if not always 50
+      alert("Please answer all questions before submitting.");
+      return;
+    }
+
+    if (!confirm("Are you sure you want to submit? You cannot change answers later.")) return;
+
+    const answersArray = Object.entries(userAnswers).map(([questionId, selectedOption]) => ({
+      questionId,
+      selectedOption
+    }));
+
+    try {
+      const token = await auth.currentUser.getIdToken();
+      const res = await fetch(`${API_URL}/user/submit-test/${currentTestId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ answers: answersArray })
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Submission failed");
+      }
+
+      const data = await res.json();
+
+      document.getElementById("resultScore").textContent = 
+        `Your Score: ${data.score} / ${data.totalQuestions}`;
+      document.getElementById("resultRank").textContent = `Rank: ${data.rank}`;
+
+      document.getElementById("testSection").classList.add("hidden");
+      document.getElementById("resultSection").classList.remove("hidden");
+
+      // Refresh leaderboard
+      loadLeaderboard(currentTestId);
+    } catch (err) {
+      console.error(err);
+      document.getElementById("submitMessage").textContent = err.message;
+      document.getElementById("submitMessage").className = "alert alert-error";
+      document.getElementById("submitMessage").classList.remove("hidden");
+    }
+  };
+
+  // ─── Load Leaderboard ─────────────────────────────────────────
+  async function loadLeaderboard(testId) {
+    try {
+      const res = await fetch(`${API_URL}/user/leaderboard/${testId}`);
+      if (!res.ok) throw new Error("Failed to load leaderboard");
+
+      const users = await res.json();
+      const container = document.getElementById("leaderboard");
+      container.innerHTML = "";
+
+      if (users.length === 0) {
+        container.innerHTML = "<p>No results yet.</p>";
+        return;
+      }
+
+      const table = document.createElement("table");
+      table.innerHTML = `
+        <tr><th>Rank</th><th>Name/Email</th><th>Score</th><th>Time</th></tr>
+      `;
+
+      users.forEach((r, i) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${i+1}</td>
+          <td>${r.userId.slice(0,8)}...</td>
+          <td>${r.score} / ${r.totalQuestions}</td>
+          <td>${new Date(r.submittedAt).toLocaleString()}</td>
+        `;
+        table.appendChild(row);
+      });
+
+      container.appendChild(table);
+      document.getElementById("leaderboardSection").classList.remove("hidden");
+    } catch (err) {
+      console.error("Leaderboard error:", err);
+    }
+  }
+</script>
+
+</body>
+</html>
