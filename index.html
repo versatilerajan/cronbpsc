@@ -157,7 +157,7 @@
     <div id="authMessage" style="text-align:center; margin-top:1.5rem; min-height:1.5rem;"></div>
   </div>
 
-  <!-- Test Area (hidden until logged in and test available) -->
+  <!-- Test Area -->
   <div id="testSection" class="hidden">
     <div class="card">
       <h2 id="testTitle">Loading test...</h2>
@@ -168,7 +168,7 @@
     </div>
   </div>
 
-  <!-- Result & Leaderboard -->
+  <!-- Result -->
   <div id="resultSection" class="hidden card">
     <h2 style="color:var(--success);">Test Completed!</h2>
     <p id="resultScore" style="font-size:1.4rem; margin:1rem 0;"></p>
@@ -176,6 +176,7 @@
     <button onclick="location.reload()" class="btn btn-primary" style="margin-top:1rem;">Back to Home</button>
   </div>
 
+  <!-- Leaderboard -->
   <div id="leaderboardSection" class="card hidden">
     <h2>Leaderboard - Today's Test</h2>
     <div id="leaderboard"></div>
@@ -187,31 +188,29 @@
   const { initializeApp, getAnalytics, getAuth, signInWithPopup, GoogleAuthProvider,
          onAuthStateChanged, signOut } = window.firebaseModules;
 
-  // ─── Your Firebase Config ─────────────────────────────────────
-  
-const firebaseConfig = {
-  apiKey: "AIzaSyALLdLzpaEE6B0rp4R_M1XTLBq6zHfZcf0",
-  authDomain: "cronbpsc.firebaseapp.com",
-  projectId: "cronbpsc",
-  storageBucket: "cronbpsc.firebasestorage.app",
-  messagingSenderId: "66923138072",
-  appId: "1:66923138072:web:ea79ce45bc8c7c15c2476d",
-  measurementId: "G-Y37J7BL805"
-};
-
+  // Your Firebase Config (already correct)
+  const firebaseConfig = {
+    apiKey: "AIza232bdbssrp4R_M1XTLBq6zHfZcf0",
+    authDomain: "cronbpsc.firebaseapp.com",
+    projectId: "cronbpsc",
+    storageBucket: "cronbpsc.firebasestorage.app",
+    messagingSenderId: "669232323422",
+    appId: "1:66923138072:web:ea79ce45bc8c7c15c2476d",
+    measurementId: "G-Y37J7BL805"
+  };
 
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
 
-  // ─── Backend URL ──────────────────────────────────────────────
-  const API_URL = "https://cronuserbackend.vercel.app/";   
+  // ─── Backend URL (now using your real one) ────────────────────
+  const API_URL = "https://cronuserbackend.vercel.app";
 
   let currentTestId = null;
   let userAnswers = {};
 
-  // ─── Auth State Listener ──────────────────────────────────────
+  // ─── Auth State ───────────────────────────────────────────────
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       document.getElementById("userDisplay").textContent = user.displayName || user.email;
@@ -235,10 +234,10 @@ const firebaseConfig = {
   // ─── Google Login ─────────────────────────────────────────────
   document.getElementById("btnGoogleLogin").onclick = async () => {
     try {
-      const result = await signInWithPopup(auth, provider);
-      // user is now signed in → onAuthStateChanged will handle UI
+      await signInWithPopup(auth, provider);
+      // onAuthStateChanged will handle the rest
     } catch (error) {
-      console.error("Google Sign-In Error:", error);
+      console.error("Google Sign-In Error:", error.code, error.message);
       document.getElementById("authMessage").innerHTML = 
         `<span style="color:#ef4444;">Login failed: ${error.message}</span>`;
     }
@@ -258,76 +257,92 @@ const firebaseConfig = {
 
     try {
       const token = await auth.currentUser.getIdToken();
+      console.log("Fetching test from:", `${API_URL}/user/today-test`);
+      console.log("ID Token (first 30 chars):", token.substring(0,30) + "...");
+
       const res = await fetch(`${API_URL}/user/today-test`, {
-        headers: { Authorization: `Bearer ${token}` }
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        cache: "no-store"
       });
 
+      console.log("Response status:", res.status);
+
       if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.message || "Failed to load test");
+        let errData;
+        try { errData = await res.json(); } catch {}
+        throw new Error(errData?.message || `HTTP ${res.status}`);
       }
 
       const data = await res.json();
 
       if (data.status === "not_started") {
-        msgEl.textContent = "Test not started yet. Come back later!";
+        msgEl.textContent = "Test has not started yet. Please check back later.";
         msgEl.className = "alert alert-error";
         return;
       }
 
-      if (data.status !== "active") {
-        msgEl.textContent = "No test available today.";
+      if (data.status !== "active" || !data.testId) {
+        msgEl.textContent = data.message || "No active test found today.";
         return;
       }
 
       currentTestId = data.testId;
-      document.getElementById("testTitle").textContent = data.title;
+      document.getElementById("testTitle").textContent = data.title || "Daily Test";
       document.getElementById("testInfo").textContent = 
-        `Total Questions: ${data.totalQuestions} • Date: ${new Date().toLocaleDateString()}`;
+        `Total Questions: ${data.totalQuestions || "?"} • Date: ${new Date().toLocaleDateString()}`;
 
       const container = document.getElementById("questionsContainer");
       container.innerHTML = "";
 
-      data.questions.forEach(q => {
-        const div = document.createElement("div");
-        div.className = "question";
-        div.innerHTML = `
-          <h3>Q${q.questionNumber}. ${q.questionStatement}</h3>
-          <label class="option"><input type="radio" name="q_${q._id}" value="option1"> ${q.options.option1}</label>
-          <label class="option"><input type="radio" name="q_${q._id}" value="option2"> ${q.options.option2}</label>
-          <label class="option"><input type="radio" name="q_${q._id}" value="option3"> ${q.options.option3}</label>
-          <label class="option"><input type="radio" name="q_${q._id}" value="option4"> ${q.options.option4}</label>
-        `;
-        container.appendChild(div);
+      if (!data.questions?.length) {
+        container.innerHTML = "<p style='color:#ef4444;'>No questions available.</p>";
+      } else {
+        data.questions.forEach(q => {
+          const div = document.createElement("div");
+          div.className = "question";
+          div.innerHTML = `
+            <h3>Q${q.questionNumber || "?"}. ${q.questionStatement || "Question text missing"}</h3>
+            <label class="option"><input type="radio" name="q_${q._id}" value="option1"> ${q.options?.option1 || "—"}</label>
+            <label class="option"><input type="radio" name="q_${q._id}" value="option2"> ${q.options?.option2 || "—"}</label>
+            <label class="option"><input type="radio" name="q_${q._id}" value="option3"> ${q.options?.option3 || "—"}</label>
+            <label class="option"><input type="radio" name="q_${q._id}" value="option4"> ${q.options?.option4 || "—"}</label>
+          `;
+          container.appendChild(div);
 
-        // Track answer change
-        div.querySelectorAll("input").forEach(inp => {
-          inp.onchange = () => {
-            userAnswers[q._id] = inp.value;
-          };
+          div.querySelectorAll("input").forEach(inp => {
+            inp.onchange = () => { userAnswers[q._id] = inp.value; };
+          });
         });
-      });
+      }
 
       document.getElementById("btnSubmitTest").classList.remove("hidden");
       msgEl.classList.add("hidden");
 
-      // Also load leaderboard
+      // Load leaderboard too
       loadLeaderboard(currentTestId);
+
     } catch (err) {
-      console.error(err);
-      msgEl.textContent = err.message || "Error loading test";
+      console.error("Load test error:", err);
+      msgEl.textContent = err.message || "Failed to load test. Please try again.";
       msgEl.className = "alert alert-error";
     }
   }
 
   // ─── Submit Test ──────────────────────────────────────────────
   document.getElementById("btnSubmitTest").onclick = async () => {
-    if (Object.keys(userAnswers).length < 50) {  // adjust if not always 50
-      alert("Please answer all questions before submitting.");
+    const answeredCount = Object.keys(userAnswers).length;
+    const total = document.querySelectorAll(".question").length;
+
+    if (answeredCount < total) {
+      alert(`Please answer all ${total} questions before submitting. (${answeredCount} answered)`);
       return;
     }
 
-    if (!confirm("Are you sure you want to submit? You cannot change answers later.")) return;
+    if (!confirm("Submit test? You cannot change answers after submission.")) return;
 
     const answersArray = Object.entries(userAnswers).map(([questionId, selectedOption]) => ({
       questionId,
@@ -340,60 +355,60 @@ const firebaseConfig = {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+          "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({ answers: answersArray })
       });
 
       if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.message || "Submission failed");
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.message || `Submission failed (${res.status})`);
       }
 
       const data = await res.json();
 
       document.getElementById("resultScore").textContent = 
         `Your Score: ${data.score} / ${data.totalQuestions}`;
-      document.getElementById("resultRank").textContent = `Rank: ${data.rank}`;
+      document.getElementById("resultRank").textContent = 
+        `Rank: ${data.rank} (based on score)`;
 
       document.getElementById("testSection").classList.add("hidden");
       document.getElementById("resultSection").classList.remove("hidden");
 
-      // Refresh leaderboard
       loadLeaderboard(currentTestId);
     } catch (err) {
-      console.error(err);
+      console.error("Submit error:", err);
       document.getElementById("submitMessage").textContent = err.message;
       document.getElementById("submitMessage").className = "alert alert-error";
       document.getElementById("submitMessage").classList.remove("hidden");
     }
   };
 
-  // ─── Load Leaderboard ─────────────────────────────────────────
+  // ─── Leaderboard ──────────────────────────────────────────────
   async function loadLeaderboard(testId) {
     try {
       const res = await fetch(`${API_URL}/user/leaderboard/${testId}`);
-      if (!res.ok) throw new Error("Failed to load leaderboard");
+      if (!res.ok) throw new Error("Leaderboard fetch failed");
 
       const users = await res.json();
       const container = document.getElementById("leaderboard");
       container.innerHTML = "";
 
-      if (users.length === 0) {
-        container.innerHTML = "<p>No results yet.</p>";
+      if (!users.length) {
+        container.innerHTML = "<p>No results submitted yet.</p>";
         return;
       }
 
       const table = document.createElement("table");
       table.innerHTML = `
-        <tr><th>Rank</th><th>Name/Email</th><th>Score</th><th>Time</th></tr>
+        <tr><th>Rank</th><th>User</th><th>Score</th><th>Submitted</th></tr>
       `;
 
       users.forEach((r, i) => {
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${i+1}</td>
-          <td>${r.userId.slice(0,8)}...</td>
+          <td>${r.userId?.substring(0,8) || "—"}...</td>
           <td>${r.score} / ${r.totalQuestions}</td>
           <td>${new Date(r.submittedAt).toLocaleString()}</td>
         `;
@@ -404,6 +419,7 @@ const firebaseConfig = {
       document.getElementById("leaderboardSection").classList.remove("hidden");
     } catch (err) {
       console.error("Leaderboard error:", err);
+      document.getElementById("leaderboard").innerHTML = "<p>Could not load leaderboard.</p>";
     }
   }
 </script>
