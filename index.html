@@ -3,23 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BPSC Daily Test | Free Daily Mock Tests & Practice</title>
-  <meta name="description" content="Free daily BPSC mock tests with real exam pattern questions, timed practice, instant results, and live leaderboard. Prepare for Bihar Public Service Commission Prelims & Mains. Sign in with Google and start today!">
-  <meta name="keywords" content="BPSC, BPSC test, BPSC daily test, BPSC mock test free, BPSC online test, free BPSC test series, BPSC prelims mock, BPSC preparation, Bihar PSC, BPSC practice questions">
+  <title>BPSC Daily Test | Free & Paid Mock Tests</title>
+  <meta name="description" content="Free and paid BPSC daily mock tests with real exam pattern questions, instant scoring, and live ranking. Prepare for Bihar PSC Prelims & Mains.">
+  <meta name="keywords" content="BPSC, BPSC test, BPSC daily test, BPSC mock test free, BPSC paid test series, free BPSC practice">
   <meta name="robots" content="index, follow">
-  <meta name="author" content="Rajan Singh - BPSC Daily Test">
   <link rel="canonical" href="https://cronbpsc.vercel.app/">
-  <meta property="og:title" content="BPSC Daily Test – Free Daily Mock Tests & Leaderboard">
-  <meta property="og:description" content="Practice free daily BPSC tests, see your rank instantly, and improve for Bihar PSC Prelims/Mains. Real exam-like questions with timer and leaderboard. Join with Google login!">
+  <meta property="og:title" content="BPSC Daily Test – Free & Paid Series">
+  <meta property="og:description" content="Daily free mocks + affordable paid test series with ranking. Real BPSC pattern questions.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://cronbpsc.vercel.app/">
   <meta property="og:image" content="https://cronbpsc.vercel.app/og-bpsc.jpg">
-  <meta property="og:image:alt" content="Free BPSC Daily Mock Test Platform">
-  <meta property="og:site_name" content="BPSC Daily Test">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="BPSC Daily Test | Free Mock Tests & Live Ranking">
-  <meta name="twitter:description" content="Daily free practice tests for BPSC exam preparation. Timed questions, instant score, leaderboard ranks. Perfect for Bihar Public Service Commission aspirants.">
-  <meta name="twitter:image" content="https://cronbpsc.vercel.app/og-bpsc.jpg">
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -80,28 +73,31 @@
     h1 { font-family: 'Playfair Display', serif; font-size: 2.8rem; color: var(--accent); letter-spacing: -1px; }
     .user-info { font-size: 0.95rem; color: var(--text-secondary); }
     .btn {
-      padding: 0.7rem 1.6rem;
+      padding: 0.8rem 1.8rem;
       border: none;
-      border-radius: 4px;
+      border-radius: 6px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
     }
+    .btn-free { background: var(--success); color: white; font-size: 1.1rem; }
+    .btn-paid { background: var(--accent); color: var(--primary); font-size: 1.1rem; }
     .btn-google { background: #4285f4; color: white; }
-    .btn-google:hover { background: #357ae8; }
     .btn-logout { background: var(--danger); color: white; }
-    .btn-logout:hover { background: #c53030; }
-    .btn-submit { background: var(--success); color: white; width: 100%; font-size: 1.1rem; padding: 1rem; }
-    .btn-submit:hover { background: #059669; }
     .hidden { display: none !important; }
     .card {
       background: var(--bg-overlay);
       border: 2px solid var(--border);
-      border-radius: 6px;
+      border-radius: 8px;
       padding: 2rem;
       margin-bottom: 2rem;
       backdrop-filter: blur(8px);
+      text-align: center;
     }
+    .mode-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 3rem; }
+    .mode-card h2 { color: var(--accent); margin-bottom: 1rem; }
+    .mode-card p { color: var(--text-secondary); margin-bottom: 1.5rem; }
+    .price { font-size: 1.8rem; font-weight: bold; color: var(--success); margin: 1rem 0; }
     .status-message {
       font-size: 1.25rem;
       font-weight: 600;
@@ -113,8 +109,7 @@
       border: 1px solid var(--border);
     }
     .status-not-started { background: rgba(245,158,11,0.15); border-color: var(--accent); color: var(--accent); }
-    .status-no-test     { background: rgba(239,68,68,0.15); border-color: var(--danger);  color: var(--danger); }
-    .status-rank-soon   { background: rgba(59,130,246,0.15); border-color: #3b82f6; color: #60a5fa; }
+    .status-no-test { background: rgba(239,68,68,0.15); border-color: var(--danger); color: var(--danger); }
     .question {
       margin: 1.5rem 0;
       padding: 1.5rem;
@@ -132,7 +127,6 @@
       border-radius: 4px;
       cursor: pointer;
     }
-    .option input { margin-right: 1rem; }
     .option:hover { border-color: var(--accent); }
     .alert {
       padding: 1rem;
@@ -143,7 +137,7 @@
     }
     .alert-success { background: rgba(16,185,129,0.2); color: var(--success); border: 1px solid var(--success); }
     .alert-warning { background: rgba(245,158,11,0.2); color: var(--accent); border: 1px solid var(--accent); }
-    .alert-error   { background: rgba(239,68,68,0.2); color: var(--danger);  border: 1px solid var(--danger); }
+    .alert-error { background: rgba(239,68,68,0.2); color: var(--danger); border: 1px solid var(--danger); }
     #leaderboard table {
       width: 100%;
       border-collapse: collapse;
@@ -157,21 +151,17 @@
     #leaderboard th { color: var(--accent); }
     .rank-display { font-size: 2.2rem; font-weight: 700; color: var(--accent); text-align: center; margin: 1.5rem 0; }
     @media (max-width: 768px) {
+      .mode-cards { grid-template-columns: 1fr; }
       h1 { font-size: 2.2rem; }
       .container { padding: 1rem; }
-      .rank-display { font-size: 1.8rem; }
     }
   </style>
 </head>
 <body>
 <noscript>
   <div style="padding: 3rem 1rem; text-align:center; background:#0f172a; color:#f8fafc; min-height:100vh;">
-    <h1 style="font-family: 'Playfair Display', serif; color:#f59e0b; margin-bottom:1.5rem;">BPSC Daily Test</h1>
-    <p style="font-size:1.2rem; max-width:700px; margin:0 auto 2rem;">
-      Free daily mock tests and practice platform for BPSC Prelims & Mains preparation.<br>
-      Features real exam pattern questions, timer, instant scoring, and live leaderboard.
-    </p>
-    <p style="color:#cbd5e1;">JavaScript is required to sign in with Google and start the test.</p>
+    <h1 style="font-family: 'Playfair Display', serif; color:#f59e0b;">BPSC Daily Test</h1>
+    <p>JavaScript is required to use this platform.</p>
   </div>
 </noscript>
 
@@ -179,27 +169,44 @@
   <header>
     <h1>BPSC Daily Test</h1>
     <div class="user-info">
-      <span id="userDisplay">Not logged in</span>
+      <span id="userDisplay">Guest</span>
       <button id="btnLogout" class="btn btn-logout hidden">Logout</button>
     </div>
   </header>
 
-  <!-- Login -->
-  <div id="loginSection" class="card">
-    <h2 style="text-align:center; color:var(--accent);">Welcome to Daily Practice</h2>
-    <p style="text-align:center; color:var(--text-secondary); margin:1.5rem 0;">
-      Sign in with Google to start today's test
-    </p>
-    <button id="btnGoogleLogin" class="btn btn-google" style="display:block; margin:0 auto; width:240px;">
-      Sign in with Google
-    </button>
-    <div id="authMessage" style="text-align:center; margin-top:1.5rem; min-height:1.5rem;"></div>
+  <!-- Mode Selection Cards -->
+  <div id="modeSelection" class="mode-cards">
+    <!-- Free Card -->
+    <div class="card">
+      <h2>Free Test Series</h2>
+      <p>Daily free mock tests with real BPSC pattern questions.<br>Instant score + public leaderboard.<br>No login required.</p>
+      <button id="btnStartFree" class="btn btn-free">Start Free Test</button>
+    </div>
+
+    <!-- Paid Card -->
+    <div class="card">
+      <h2>Paid Test Series</h2>
+      <p>Full access • Personalized ranking • All features<br><span class="price">₹9 / month</span> or <span class="price">₹100 / year</span></p>
+      <button id="btnStartPaid" class="btn btn-paid">Start Paid Test</button>
+    </div>
   </div>
 
-  <!-- Test Area -->
+  <!-- Login Prompt (only shown when trying paid without auth) -->
+  <div id="loginSection" class="card hidden">
+    <h2 style="color:var(--accent);">Sign in to access Paid Tests</h2>
+    <p style="color:var(--text-secondary); margin:1.5rem 0;">
+      Unlock personalized ranking and full features
+    </p>
+    <button id="btnGoogleLogin" class="btn btn-google" style="width:240px; margin:0 auto;">
+      Sign in with Google
+    </button>
+    <div id="authMessage" style="margin-top:1.5rem; min-height:1.5rem;"></div>
+  </div>
+
+  <!-- Test / Questions Area -->
   <div id="testSection" class="hidden">
     <div class="card">
-      <h2 id="testTitle">Loading today's test...</h2>
+      <h2 id="testTitle">Loading test...</h2>
       <div id="statusMessage" class="status-message hidden"></div>
       <p id="testInfo" style="color:var(--text-secondary); text-align:center; margin:1rem 0;"></p>
       <div id="questionsContainer"></div>
@@ -211,10 +218,7 @@
   <!-- Result Area -->
   <div id="resultSection" class="hidden card">
     <h2 style="color:var(--success); text-align:center;">Test Completed!</h2>
-    <p id="resultScore" style="font-size:1.6rem; text-align:center; margin:1rem 0;"></p>
-    <div id="rankSoonMessage" class="alert alert-warning hidden">
-      Final rank & leaderboard will be visible after <strong>6:00 PM IST</strong>
-    </div>
+    <p id="resultScore" style="font-size:1.6rem; text-align:center; margin:1.5rem 0;"></p>
     <p id="resultRank" class="rank-display"></p>
     <p id="resultTieNote" style="text-align:center; color:var(--text-secondary);"></p>
     <button onclick="location.reload()" class="btn" style="display:block; margin:2rem auto; width:220px; background:#f59e0b; color:#0f172a;">
@@ -224,11 +228,8 @@
 
   <!-- Leaderboard -->
   <div id="leaderboardSection" class="card hidden">
-    <h2 style="text-align:center;">Leaderboard - Today's Test</h2>
-    <div id="leaderboardNotice" class="alert alert-warning hidden" style="margin:1rem 0;">
-      Leaderboard becomes visible at 6:00 PM IST
-    </div>
-    <div id="leaderboard" style="margin-top:1rem;"></div>
+    <h2 style="text-align:center;">Leaderboard</h2>
+    <div id="leaderboard" style="margin-top:1.5rem;"></div>
   </div>
 </div>
 
@@ -251,111 +252,107 @@
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
 
-  const API_URL = "https://cronuserbackend.vercel.app"; // your user backend
+  const API_URL = "https://cronuserbackend.vercel.app";
 
   let currentTestId = null;
   let userAnswers = {};
+  let isFreeMode = false;   // true = free, false = paid (after login)
 
-  // Approximate IST check (server is authoritative)
-  function isAfter6PMIST() {
-    const now = new Date();
-    const istOffset = 5.5 * 60 * 60 * 1000;
-    const istTime = new Date(now.getTime() + istOffset);
-    const hours = istTime.getUTCHours();
-    return hours >= 18; // 18:00 IST = 12:30 UTC
-  }
+  // Show mode selection initially
+  document.getElementById("modeSelection").classList.remove("hidden");
 
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      document.getElementById("userDisplay").textContent = user.displayName || user.email.split('@')[0];
-      document.getElementById("btnGoogleLogin").classList.add("hidden");
-      document.getElementById("btnLogout").classList.remove("hidden");
-      document.getElementById("loginSection").classList.add("hidden");
-      document.getElementById("testSection").classList.remove("hidden");
-      await loadTodayTest();
-    } else {
-      document.getElementById("userDisplay").textContent = "Not logged in";
-      document.getElementById("btnGoogleLogin").classList.remove("hidden");
-      document.getElementById("btnLogout").classList.add("hidden");
-      document.getElementById("loginSection").classList.remove("hidden");
-      document.getElementById("testSection").classList.add("hidden");
-      document.getElementById("resultSection").classList.add("hidden");
-      document.getElementById("leaderboardSection").classList.add("hidden");
-    }
-  });
+  // Free mode – no auth
+  document.getElementById("btnStartFree").onclick = async () => {
+    isFreeMode = true;
+    document.getElementById("modeSelection").classList.add("hidden");
+    document.getElementById("loginSection").classList.add("hidden");
+    document.getElementById("testSection").classList.remove("hidden");
+    document.getElementById("userDisplay").textContent = "Free Mode";
+    await loadTest();
+  };
+
+  // Paid mode – require login
+  document.getElementById("btnStartPaid").onclick = () => {
+    document.getElementById("modeSelection").classList.add("hidden");
+    document.getElementById("loginSection").classList.remove("hidden");
+  };
 
   document.getElementById("btnGoogleLogin").onclick = async () => {
     try {
       await signInWithPopup(auth, provider);
     } catch (error) {
-      console.error("Google Sign-In Error:", error);
       document.getElementById("authMessage").innerHTML =
         `<span style="color:var(--danger);">Login failed: ${error.message}</span>`;
     }
   };
 
+  onAuthStateChanged(auth, async (user) => {
+    if (user && !isFreeMode) {
+      document.getElementById("userDisplay").textContent = user.displayName || user.email.split('@')[0];
+      document.getElementById("btnLogout").classList.remove("hidden");
+      document.getElementById("loginSection").classList.add("hidden");
+      document.getElementById("testSection").classList.remove("hidden");
+      await loadTest();
+    } else if (!isFreeMode) {
+      document.getElementById("userDisplay").textContent = "Guest";
+      document.getElementById("btnLogout").classList.add("hidden");
+    }
+  });
+
   document.getElementById("btnLogout").onclick = async () => {
     await signOut(auth);
+    location.reload();
   };
 
-  async function loadTodayTest() {
+  async function loadTest() {
     const statusEl = document.getElementById("statusMessage");
     const titleEl = document.getElementById("testTitle");
     const infoEl = document.getElementById("testInfo");
     const container = document.getElementById("questionsContainer");
     const submitBtn = document.getElementById("btnSubmitTest");
 
-    statusEl.classList.remove("hidden", "not-started", "no-test", "status-rank-soon");
-    statusEl.textContent = "Loading today's test...";
-    titleEl.textContent = "Daily Test";
-    infoEl.textContent = "";
+    statusEl.classList.remove("hidden");
+    statusEl.textContent = "Loading test...";
+    titleEl.textContent = "Loading...";
     container.innerHTML = "";
     submitBtn.classList.add("hidden");
 
     try {
-      const token = await auth.currentUser.getIdToken();
-      const res = await fetch(`${API_URL}/user/today-test`, {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
+      let endpoint = isFreeMode ? "/free/today-test" : "/user/today-test";
+      let headers = isFreeMode ? {} : { "Authorization": `Bearer ${await auth.currentUser.getIdToken()}` };
+
+      const res = await fetch(`${API_URL}${endpoint}`, { headers });
 
       if (!res.ok) {
         if (res.status === 404) {
           statusEl.textContent = "No test available today.";
-          statusEl.classList.add("no-test");
           titleEl.textContent = "No Test Today";
           return;
         }
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.message || `Server error (${res.status})`);
+        throw new Error("Failed to load test");
       }
 
       const data = await res.json();
 
       if (data.status === "not_started") {
-        statusEl.textContent = "Test starts at midnight (00:00 IST)";
-        statusEl.classList.add("not-started");
-        titleEl.textContent = data.title || "Upcoming Daily Test";
-        infoEl.textContent = data.startTimeIST
-          ? `Starts: ${new Date(data.startTimeIST).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}`
-          : "";
+        statusEl.textContent = "Test not started yet (starts at 00:00 IST)";
+        titleEl.textContent = data.title || "Upcoming Test";
         return;
       }
 
-      if (data.status !== "active" || !data.testId) {
-        statusEl.textContent = "No active test right now.";
+      if (data.status !== "active") {
+        statusEl.textContent = "Test has ended or not available.";
         return;
       }
 
-      // Active test
       statusEl.classList.add("hidden");
-      titleEl.textContent = data.title || "BPSC Daily Test";
-      infoEl.textContent = `Total Questions: ${data.totalQuestions || "?"}   |   Time left to submit: until ~23:59 IST`;
-
+      titleEl.textContent = data.title || (isFreeMode ? "Free BPSC Test" : "Paid BPSC Test");
+      infoEl.textContent = `Total Questions: ${data.totalQuestions}`;
       currentTestId = data.testId;
       userAnswers = {};
 
       if (!data.questions?.length) {
-        container.innerHTML = '<p style="color:var(--danger); text-align:center;">No questions loaded.</p>';
+        container.innerHTML = '<p style="color:var(--danger);">No questions loaded.</p>';
       } else {
         data.questions.forEach(q => {
           const div = document.createElement("div");
@@ -376,13 +373,10 @@
       }
 
       submitBtn.classList.remove("hidden");
-
-      // Show leaderboard or teaser
-      await updateRankAndLeaderboard();
+      await loadLeaderboardOrRank();
     } catch (err) {
-      console.error("Load test error:", err);
-      statusEl.textContent = err.message || "Failed to load test. Please try again.";
-      statusEl.classList.add("no-test");
+      statusEl.textContent = "Failed to load test. Please try again.";
+      statusEl.classList.add("status-no-test");
     }
   }
 
@@ -391,11 +385,11 @@
     const total = document.querySelectorAll(".question").length;
 
     if (answered < total) {
-      alert(`Please answer all ${total} questions (${answered} answered so far).`);
+      alert(`Please answer all ${total} questions (${answered} answered).`);
       return;
     }
 
-    if (!confirm("Submit your answers? You cannot change them later.")) return;
+    if (!confirm("Submit your answers?")) return;
 
     const answersArray = Object.entries(userAnswers).map(([questionId, selectedOption]) => ({
       questionId,
@@ -403,141 +397,138 @@
     }));
 
     try {
-      const token = await auth.currentUser.getIdToken();
-      const res = await fetch(`${API_URL}/user/submit-test/${currentTestId}`, {
+      let endpoint = isFreeMode ? "/free/submit-test/" : "/user/submit-test/";
+      let headers = {
+        "Content-Type": "application/json"
+      };
+      if (!isFreeMode) {
+        headers["Authorization"] = `Bearer ${await auth.currentUser.getIdToken()}`;
+      }
+
+      const res = await fetch(`${API_URL}${endpoint}${currentTestId}`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
+        headers,
         body: JSON.stringify({ answers: answersArray })
       });
 
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.message || `Submission failed (${res.status})`);
-      }
+      if (!res.ok) throw new Error("Submission failed");
 
       const data = await res.json();
 
       document.getElementById("resultScore").textContent =
-        `Your Score: ${data.score} out of ${data.totalQuestions}`;
+        `Your Score: ${data.score} / ${data.total || data.totalQuestions}`;
+
+      if (isFreeMode) {
+        document.getElementById("resultRank").textContent = data.rankDisplay || `Rank: ${data.yourRank}`;
+      } else {
+        document.getElementById("resultRank").textContent = data.preliminaryRank ? `Preliminary Rank: ${data.preliminaryRank}` : "Rank after 6 PM";
+      }
 
       document.getElementById("testSection").classList.add("hidden");
       document.getElementById("resultSection").classList.remove("hidden");
 
-      await updateRankAndLeaderboard(true); // force refresh after submit
+      await loadLeaderboardOrRank(true);
     } catch (err) {
-      console.error("Submit error:", err);
       document.getElementById("submitMessage").textContent = err.message;
       document.getElementById("submitMessage").className = "alert alert-error";
       document.getElementById("submitMessage").classList.remove("hidden");
     }
   };
 
-  async function updateRankAndLeaderboard(afterSubmit = false) {
+  async function loadLeaderboardOrRank(afterSubmit = false) {
     if (!currentTestId) return;
 
     const leaderboardEl = document.getElementById("leaderboard");
-    const noticeEl = document.getElementById("leaderboardNotice");
-    const rankEl = document.getElementById("resultRank");
-    const tieEl = document.getElementById("resultTieNote");
-    const soonEl = document.getElementById("rankSoonMessage");
-
     leaderboardEl.innerHTML = "<p>Loading...</p>";
 
     try {
-      const token = await auth.currentUser.getIdToken();
+      let lbEndpoint = isFreeMode ? "/free/leaderboard/" : "/user/leaderboard/";
+      let rankEndpoint = isFreeMode ? null : "/user/my-rank/"; // free has no personal rank endpoint
 
-      // Get personal rank (most important)
-      const rankRes = await fetch(`${API_URL}/user/my-rank/${currentTestId}`, {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
-
-      if (rankRes.ok) {
-        const rankData = await rankRes.json();
-
-        if (rankData.rank) {
-          const display = rankData.rankDisplay || `${rankData.rank} / ?`;
-          rankEl.textContent = display;
-
-          if (rankData.tiesInGroup > 1) {
-            tieEl.textContent = rankData.message || `Tied with ${rankData.tiesInGroup - 1} others`;
-          } else {
-            tieEl.textContent = "";
-          }
-
-          soonEl.classList.add("hidden");
-        } else if (afterSubmit) {
-          rankEl.textContent = "—";
-          soonEl.classList.remove("hidden");
-        }
-      } else if (afterSubmit) {
-        rankEl.textContent = "Rank available after 6:00 PM";
-        soonEl.classList.remove("hidden");
-      }
-
-      // Leaderboard only after 6 PM
-      if (isAfter6PMIST()) {
-        noticeEl.classList.add("hidden");
-        const lbRes = await fetch(`${API_URL}/user/leaderboard/${currentTestId}?limit=50`);
+      // For free: always show leaderboard
+      // For paid: show rank + conditional leaderboard
+      if (isFreeMode) {
+        const lbRes = await fetch(`${API_URL}${lbEndpoint}${currentTestId}`);
         if (lbRes.ok) {
           const { leaderboard, totalParticipants } = await lbRes.json();
-          leaderboardEl.innerHTML = "";
+          renderLeaderboard(leaderboard, totalParticipants);
+        }
+      } else {
+        // Paid mode – personal rank first
+        const token = await auth.currentUser.getIdToken();
+        const rankRes = await fetch(`${API_URL}${rankEndpoint}${currentTestId}`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
 
-          if (!leaderboard?.length) {
-            leaderboardEl.innerHTML = "<p>No results yet.</p>";
-            return;
-          }
+        if (rankRes.ok) {
+          const rankData = await rankRes.json();
+          document.getElementById("resultRank").textContent = rankData.rankDisplay || "—";
+        }
 
-          const table = document.createElement("table");
-          table.innerHTML = `
-            <tr>
-              <th>Rank</th>
-              <th>User</th>
-              <th>Score</th>
-              <th>Time</th>
-            </tr>
-          `;
-
-          leaderboard.forEach(r => {
-            const timeStr = r.submittedAt ? new Date(r.submittedAt).toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'}) : "—";
-            const row = document.createElement("tr");
-            row.innerHTML = `
-              <td>—</td>
-              <td>${r.userId?.substring(0,8) || "—"}...</td>
-              <td>${r.score} / ${r.totalQuestions}</td>
-              <td>${timeStr}</td>
-            `;
-            table.appendChild(row);
+        // Leaderboard only after 6 PM for paid
+        if (isAfter6PMIST()) {
+          const lbRes = await fetch(`${API_URL}${lbEndpoint}${currentTestId}?limit=50`, {
+            headers: { "Authorization": `Bearer ${token}` }
           });
-
-          leaderboardEl.appendChild(table);
-          if (totalParticipants) {
-            const p = document.createElement("p");
-            p.style.textAlign = "center";
-            p.style.marginTop = "1rem";
-            p.textContent = `Total participants: ${totalParticipants}`;
-            leaderboardEl.appendChild(p);
+          if (lbRes.ok) {
+            const { leaderboard, totalParticipants } = await lbRes.json();
+            renderLeaderboard(leaderboard, totalParticipants);
           }
         }
-        document.getElementById("leaderboardSection").classList.remove("hidden");
-      } else {
-        noticeEl.classList.remove("hidden");
-        leaderboardEl.innerHTML = "<p style='text-align:center; color:var(--text-secondary);'>Available after 6:00 PM IST</p>";
-        document.getElementById("leaderboardSection").classList.remove("hidden");
       }
+
+      document.getElementById("leaderboardSection").classList.remove("hidden");
     } catch (err) {
-      console.error("Rank/Leaderboard error:", err);
-      leaderboardEl.innerHTML = "<p style='color:var(--danger);'>Could not load leaderboard</p>";
+      leaderboardEl.innerHTML = "<p style='color:var(--danger);'>Could not load data</p>";
     }
   }
 
-  // Initial load + periodic refresh (every 60s after submit or after 6pm)
-  setInterval(() => {
-    if (currentTestId && auth.currentUser) {
-      updateRankAndLeaderboard();
+  function renderLeaderboard(data, total) {
+    const container = document.getElementById("leaderboard");
+    container.innerHTML = "";
+
+    if (!data?.length) {
+      container.innerHTML = "<p>No results yet.</p>";
+      return;
     }
+
+    const table = document.createElement("table");
+    table.innerHTML = `
+      <tr><th>Rank</th><th>Score</th><th>Submitted</th></tr>
+    `;
+
+    data.forEach(item => {
+      const time = new Date(item.submittedAt).toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${item.rank || '—'}</td>
+        <td>${item.score} / ${item.totalQuestions}</td>
+        <td>${time}</td>
+      `;
+      table.appendChild(row);
+    });
+
+    container.appendChild(table);
+
+    if (total) {
+      const p = document.createElement("p");
+      p.style.textAlign = "center";
+      p.style.marginTop = "1rem";
+      p.textContent = `Total participants: ${total}`;
+      container.appendChild(p);
+    }
+  }
+
+  function isAfter6PMIST() {
+    const now = new Date();
+    const istOffset = 5.5 * 60 * 60 * 1000;
+    const istTime = new Date(now.getTime() + istOffset);
+    return istTime.getUTCHours() >= 18;
+  }
+
+  // Periodic refresh for leaderboard (every 60s)
+  setInterval(() => {
+    if (currentTestId) loadLeaderboardOrRank();
   }, 60000);
 </script>
 </body>
