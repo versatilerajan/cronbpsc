@@ -8,20 +8,19 @@
   <meta name="keywords" content="BPSC, BPSC test, BPSC daily test, BPSC mock test free, BPSC online test, free BPSC test series, BPSC prelims mock, BPSC preparation, Bihar PSC, BPSC practice questions">
   <meta name="robots" content="index, follow">
   <meta name="author" content="Rajan Singh - BPSC Daily Test">
-  <link rel="canonical" href="https://cronbpsc.vercel.app/"> 
+  <link rel="canonical" href="https://cronbpsc.vercel.app/">
   <meta property="og:title" content="BPSC Daily Test – Free Daily Mock Tests & Leaderboard">
   <meta property="og:description" content="Practice free daily BPSC tests, see your rank instantly, and improve for Bihar PSC Prelims/Mains. Real exam-like questions with timer and leaderboard. Join with Google login!">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://cronbpsc.vercel.app/"> 
-  <meta property="og:image" content="https://cronbpsc.vercel.app/og-bpsc.jpg"> <!-- Recommended: 1200×630 px -->
+  <meta property="og:url" content="https://cronbpsc.vercel.app/">
+  <meta property="og:image" content="https://cronbpsc.vercel.app/og-bpsc.jpg">
   <meta property="og:image:alt" content="Free BPSC Daily Mock Test Platform">
   <meta property="og:site_name" content="BPSC Daily Test">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="BPSC Daily Test | Free Mock Tests & Live Ranking">
   <meta name="twitter:description" content="Daily free practice tests for BPSC exam preparation. Timed questions, instant score, leaderboard ranks. Perfect for Bihar Public Service Commission aspirants.">
-  <meta name="twitter:image" content="https://cronbpsc.vercel.app/og-bpsc.jpg"> <!-- same image -->
+  <meta name="twitter:image" content="https://cronbpsc.vercel.app/og-bpsc.jpg">
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
-  <!-- <link rel="apple-touch-icon" href="/apple-touch-icon.png"> -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
@@ -40,7 +39,6 @@
       onAuthStateChanged, signOut
     };
   </script>
-
   <style>
     :root {
       --primary: #0f172a;
@@ -114,16 +112,9 @@
       background: rgba(30,41,59,0.7);
       border: 1px solid var(--border);
     }
-    .status-not-started {
-      background: rgba(245,158,11,0.15);
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-    .status-no-test {
-      background: rgba(239,68,68,0.15);
-      border-color: var(--danger);
-      color: var(--danger);
-    }
+    .status-not-started { background: rgba(245,158,11,0.15); border-color: var(--accent); color: var(--accent); }
+    .status-no-test     { background: rgba(239,68,68,0.15); border-color: var(--danger);  color: var(--danger); }
+    .status-rank-soon   { background: rgba(59,130,246,0.15); border-color: #3b82f6; color: #60a5fa; }
     .question {
       margin: 1.5rem 0;
       padding: 1.5rem;
@@ -151,7 +142,8 @@
       text-align: center;
     }
     .alert-success { background: rgba(16,185,129,0.2); color: var(--success); border: 1px solid var(--success); }
-    .alert-error { background: rgba(239,68,68,0.2); color: var(--danger); border: 1px solid var(--danger); }
+    .alert-warning { background: rgba(245,158,11,0.2); color: var(--accent); border: 1px solid var(--accent); }
+    .alert-error   { background: rgba(239,68,68,0.2); color: var(--danger);  border: 1px solid var(--danger); }
     #leaderboard table {
       width: 100%;
       border-collapse: collapse;
@@ -163,15 +155,15 @@
       border-bottom: 1px solid var(--border);
     }
     #leaderboard th { color: var(--accent); }
+    .rank-display { font-size: 2.2rem; font-weight: 700; color: var(--accent); text-align: center; margin: 1.5rem 0; }
     @media (max-width: 768px) {
       h1 { font-size: 2.2rem; }
       .container { padding: 1rem; }
+      .rank-display { font-size: 1.8rem; }
     }
   </style>
 </head>
 <body>
-
-<!-- Noscript fallback – helps search engines and users with JS disabled -->
 <noscript>
   <div style="padding: 3rem 1rem; text-align:center; background:#0f172a; color:#f8fafc; min-height:100vh;">
     <h1 style="font-family: 'Playfair Display', serif; color:#f59e0b; margin-bottom:1.5rem;">BPSC Daily Test</h1>
@@ -179,10 +171,7 @@
       Free daily mock tests and practice platform for BPSC Prelims & Mains preparation.<br>
       Features real exam pattern questions, timer, instant scoring, and live leaderboard.
     </p>
-    <p style="color:#cbd5e1;">
-      JavaScript is required to sign in with Google and start the test.<br>
-      Please enable JavaScript in your browser settings.
-    </p>
+    <p style="color:#cbd5e1;">JavaScript is required to sign in with Google and start the test.</p>
   </div>
 </noscript>
 
@@ -195,7 +184,7 @@
     </div>
   </header>
 
-  <!-- Login Section -->
+  <!-- Login -->
   <div id="loginSection" class="card">
     <h2 style="text-align:center; color:var(--accent);">Welcome to Daily Practice</h2>
     <p style="text-align:center; color:var(--text-secondary); margin:1.5rem 0;">
@@ -207,7 +196,7 @@
     <div id="authMessage" style="text-align:center; margin-top:1.5rem; min-height:1.5rem;"></div>
   </div>
 
-  <!-- Test / Status Section -->
+  <!-- Test Area -->
   <div id="testSection" class="hidden">
     <div class="card">
       <h2 id="testTitle">Loading today's test...</h2>
@@ -219,20 +208,27 @@
     </div>
   </div>
 
-  <!-- Result Section -->
+  <!-- Result Area -->
   <div id="resultSection" class="hidden card">
     <h2 style="color:var(--success); text-align:center;">Test Completed!</h2>
-    <p id="resultScore" style="font-size:1.6rem; text-align:center; margin:1.5rem 0;"></p>
-    <p id="resultRank" style="text-align:center; font-size:1.2rem;"></p>
-    <button onclick="location.reload()" class="btn btn-primary" style="display:block; margin:2rem auto; width:220px; background:#f59e0b; color:#0f172a;">
+    <p id="resultScore" style="font-size:1.6rem; text-align:center; margin:1rem 0;"></p>
+    <div id="rankSoonMessage" class="alert alert-warning hidden">
+      Final rank & leaderboard will be visible after <strong>6:00 PM IST</strong>
+    </div>
+    <p id="resultRank" class="rank-display"></p>
+    <p id="resultTieNote" style="text-align:center; color:var(--text-secondary);"></p>
+    <button onclick="location.reload()" class="btn" style="display:block; margin:2rem auto; width:220px; background:#f59e0b; color:#0f172a;">
       Back to Home
     </button>
   </div>
 
-  <!-- Leaderboard Section -->
+  <!-- Leaderboard -->
   <div id="leaderboardSection" class="card hidden">
     <h2 style="text-align:center;">Leaderboard - Today's Test</h2>
-    <div id="leaderboard" style="margin-top:1.5rem;"></div>
+    <div id="leaderboardNotice" class="alert alert-warning hidden" style="margin:1rem 0;">
+      Leaderboard becomes visible at 6:00 PM IST
+    </div>
+    <div id="leaderboard" style="margin-top:1rem;"></div>
   </div>
 </div>
 
@@ -254,14 +250,24 @@
   getAnalytics(app);
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
-  const API_URL = "https://cronuserbackend.vercel.app";
+
+  const API_URL = "https://cronuserbackend.vercel.app"; // your user backend
 
   let currentTestId = null;
   let userAnswers = {};
 
+  // Approximate IST check (server is authoritative)
+  function isAfter6PMIST() {
+    const now = new Date();
+    const istOffset = 5.5 * 60 * 60 * 1000;
+    const istTime = new Date(now.getTime() + istOffset);
+    const hours = istTime.getUTCHours();
+    return hours >= 18; // 18:00 IST = 12:30 UTC
+  }
+
   onAuthStateChanged(auth, async (user) => {
     if (user) {
-      document.getElementById("userDisplay").textContent = user.displayName || user.email;
+      document.getElementById("userDisplay").textContent = user.displayName || user.email.split('@')[0];
       document.getElementById("btnGoogleLogin").classList.add("hidden");
       document.getElementById("btnLogout").classList.remove("hidden");
       document.getElementById("loginSection").classList.add("hidden");
@@ -299,7 +305,7 @@
     const container = document.getElementById("questionsContainer");
     const submitBtn = document.getElementById("btnSubmitTest");
 
-    statusEl.classList.remove("hidden", "not-started", "no-test");
+    statusEl.classList.remove("hidden", "not-started", "no-test", "status-rank-soon");
     statusEl.textContent = "Loading today's test...";
     titleEl.textContent = "Daily Test";
     infoEl.textContent = "";
@@ -326,11 +332,11 @@
       const data = await res.json();
 
       if (data.status === "not_started") {
-        statusEl.textContent = "Test has not started yet. Please check back later.";
+        statusEl.textContent = "Test starts at midnight (00:00 IST)";
         statusEl.classList.add("not-started");
         titleEl.textContent = data.title || "Upcoming Daily Test";
-        infoEl.textContent = data.startTime
-          ? `Starts at: ${new Date(data.startTime).toLocaleString()}`
+        infoEl.textContent = data.startTimeIST
+          ? `Starts: ${new Date(data.startTimeIST).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}`
           : "";
         return;
       }
@@ -343,7 +349,8 @@
       // Active test
       statusEl.classList.add("hidden");
       titleEl.textContent = data.title || "BPSC Daily Test";
-      infoEl.textContent = `Total Questions: ${data.totalQuestions || "?"}`;
+      infoEl.textContent = `Total Questions: ${data.totalQuestions || "?"}   |   Time left to submit: until ~23:59 IST`;
+
       currentTestId = data.testId;
       userAnswers = {};
 
@@ -369,7 +376,9 @@
       }
 
       submitBtn.classList.remove("hidden");
-      loadLeaderboard(currentTestId);
+
+      // Show leaderboard or teaser
+      await updateRankAndLeaderboard();
     } catch (err) {
       console.error("Load test error:", err);
       statusEl.textContent = err.message || "Failed to load test. Please try again.";
@@ -413,13 +422,11 @@
 
       document.getElementById("resultScore").textContent =
         `Your Score: ${data.score} out of ${data.totalQuestions}`;
-      document.getElementById("resultRank").textContent =
-        `Your Rank: ${data.rank}`;
 
       document.getElementById("testSection").classList.add("hidden");
       document.getElementById("resultSection").classList.remove("hidden");
 
-      loadLeaderboard(currentTestId);
+      await updateRankAndLeaderboard(true); // force refresh after submit
     } catch (err) {
       console.error("Submit error:", err);
       document.getElementById("submitMessage").textContent = err.message;
@@ -428,41 +435,110 @@
     }
   };
 
-  async function loadLeaderboard(testId) {
+  async function updateRankAndLeaderboard(afterSubmit = false) {
+    if (!currentTestId) return;
+
+    const leaderboardEl = document.getElementById("leaderboard");
+    const noticeEl = document.getElementById("leaderboardNotice");
+    const rankEl = document.getElementById("resultRank");
+    const tieEl = document.getElementById("resultTieNote");
+    const soonEl = document.getElementById("rankSoonMessage");
+
+    leaderboardEl.innerHTML = "<p>Loading...</p>";
+
     try {
-      const res = await fetch(`${API_URL}/user/leaderboard/${testId}`);
-      if (!res.ok) return;
-      const users = await res.json();
-      const container = document.getElementById("leaderboard");
-      container.innerHTML = "";
+      const token = await auth.currentUser.getIdToken();
 
-      if (!users.length) {
-        container.innerHTML = "<p>No results yet.</p>";
-        return;
-      }
-
-      const table = document.createElement("table");
-      table.innerHTML = `
-        <tr><th>Rank</th><th>User</th><th>Score</th><th>Submitted</th></tr>
-      `;
-
-      users.forEach((r, i) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${i+1}</td>
-          <td>${r.userId?.substring(0,8) || "—"}...</td>
-          <td>${r.score} / ${r.totalQuestions}</td>
-          <td>${new Date(r.submittedAt).toLocaleString()}</td>
-        `;
-        table.appendChild(row);
+      // Get personal rank (most important)
+      const rankRes = await fetch(`${API_URL}/user/my-rank/${currentTestId}`, {
+        headers: { "Authorization": `Bearer ${token}` }
       });
 
-      container.appendChild(table);
-      document.getElementById("leaderboardSection").classList.remove("hidden");
+      if (rankRes.ok) {
+        const rankData = await rankRes.json();
+
+        if (rankData.rank) {
+          const display = rankData.rankDisplay || `${rankData.rank} / ?`;
+          rankEl.textContent = display;
+
+          if (rankData.tiesInGroup > 1) {
+            tieEl.textContent = rankData.message || `Tied with ${rankData.tiesInGroup - 1} others`;
+          } else {
+            tieEl.textContent = "";
+          }
+
+          soonEl.classList.add("hidden");
+        } else if (afterSubmit) {
+          rankEl.textContent = "—";
+          soonEl.classList.remove("hidden");
+        }
+      } else if (afterSubmit) {
+        rankEl.textContent = "Rank available after 6:00 PM";
+        soonEl.classList.remove("hidden");
+      }
+
+      // Leaderboard only after 6 PM
+      if (isAfter6PMIST()) {
+        noticeEl.classList.add("hidden");
+        const lbRes = await fetch(`${API_URL}/user/leaderboard/${currentTestId}?limit=50`);
+        if (lbRes.ok) {
+          const { leaderboard, totalParticipants } = await lbRes.json();
+          leaderboardEl.innerHTML = "";
+
+          if (!leaderboard?.length) {
+            leaderboardEl.innerHTML = "<p>No results yet.</p>";
+            return;
+          }
+
+          const table = document.createElement("table");
+          table.innerHTML = `
+            <tr>
+              <th>Rank</th>
+              <th>User</th>
+              <th>Score</th>
+              <th>Time</th>
+            </tr>
+          `;
+
+          leaderboard.forEach(r => {
+            const timeStr = r.submittedAt ? new Date(r.submittedAt).toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'}) : "—";
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td>—</td>
+              <td>${r.userId?.substring(0,8) || "—"}...</td>
+              <td>${r.score} / ${r.totalQuestions}</td>
+              <td>${timeStr}</td>
+            `;
+            table.appendChild(row);
+          });
+
+          leaderboardEl.appendChild(table);
+          if (totalParticipants) {
+            const p = document.createElement("p");
+            p.style.textAlign = "center";
+            p.style.marginTop = "1rem";
+            p.textContent = `Total participants: ${totalParticipants}`;
+            leaderboardEl.appendChild(p);
+          }
+        }
+        document.getElementById("leaderboardSection").classList.remove("hidden");
+      } else {
+        noticeEl.classList.remove("hidden");
+        leaderboardEl.innerHTML = "<p style='text-align:center; color:var(--text-secondary);'>Available after 6:00 PM IST</p>";
+        document.getElementById("leaderboardSection").classList.remove("hidden");
+      }
     } catch (err) {
-      console.error("Leaderboard error:", err);
+      console.error("Rank/Leaderboard error:", err);
+      leaderboardEl.innerHTML = "<p style='color:var(--danger);'>Could not load leaderboard</p>";
     }
   }
+
+  // Initial load + periodic refresh (every 60s after submit or after 6pm)
+  setInterval(() => {
+    if (currentTestId && auth.currentUser) {
+      updateRankAndLeaderboard();
+    }
+  }, 60000);
 </script>
 </body>
 </html>
