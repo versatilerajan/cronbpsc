@@ -3,23 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BPSC Daily Test - User Panel</title>
+  <title>BPSC Daily Test | Free Daily Mock Tests & Practice</title>
+  <meta name="description" content="Free daily BPSC mock tests with real exam pattern questions, timed practice, instant results, and live leaderboard. Prepare for Bihar Public Service Commission Prelims & Mains. Sign in with Google and start today!">
+  <meta name="keywords" content="BPSC, BPSC test, BPSC daily test, BPSC mock test free, BPSC online test, free BPSC test series, BPSC prelims mock, BPSC preparation, Bihar PSC, BPSC practice questions">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="Rajan Singh - BPSC Daily Test">
+  <link rel="canonical" href="https://cronbpsc.vercel.app/"> 
+  <meta property="og:title" content="BPSC Daily Test – Free Daily Mock Tests & Leaderboard">
+  <meta property="og:description" content="Practice free daily BPSC tests, see your rank instantly, and improve for Bihar PSC Prelims/Mains. Real exam-like questions with timer and leaderboard. Join with Google login!">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cronbpsc.vercel.app/"> 
+  <meta property="og:image" content="https://cronbpsc.vercel.app/og-bpsc.jpg"> <!-- Recommended: 1200×630 px -->
+  <meta property="og:image:alt" content="Free BPSC Daily Mock Test Platform">
+  <meta property="og:site_name" content="BPSC Daily Test">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="BPSC Daily Test | Free Mock Tests & Live Ranking">
+  <meta name="twitter:description" content="Daily free practice tests for BPSC exam preparation. Timed questions, instant score, leaderboard ranks. Perfect for Bihar Public Service Commission aspirants.">
+  <meta name="twitter:image" content="https://cronbpsc.vercel.app/og-bpsc.jpg"> <!-- same image -->
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <!-- <link rel="apple-touch-icon" href="/apple-touch-icon.png"> -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
-  
-  <!-- Firebase SDKs -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-analytics.js";
-    import { 
-      getAuth, 
-      signInWithPopup, 
-      GoogleAuthProvider, 
-      onAuthStateChanged, 
-      signOut 
+    import {
+      getAuth,
+      signInWithPopup,
+      GoogleAuthProvider,
+      onAuthStateChanged,
+      signOut
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-
     window.firebaseModules = {
       initializeApp, getAnalytics, getAuth, signInWithPopup, GoogleAuthProvider,
       onAuthStateChanged, signOut
@@ -49,7 +64,7 @@
       content: '';
       position: fixed;
       inset: 0;
-      background-image: 
+      background-image:
         repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(248,250,252,0.03) 2px, rgba(248,250,252,0.03) 4px),
         repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(248,250,252,0.03) 2px, rgba(248,250,252,0.03) 4px);
       pointer-events: none;
@@ -136,7 +151,7 @@
       text-align: center;
     }
     .alert-success { background: rgba(16,185,129,0.2); color: var(--success); border: 1px solid var(--success); }
-    .alert-error   { background: rgba(239,68,68,0.2); color: var(--danger); border: 1px solid var(--danger); }
+    .alert-error { background: rgba(239,68,68,0.2); color: var(--danger); border: 1px solid var(--danger); }
     #leaderboard table {
       width: 100%;
       border-collapse: collapse;
@@ -156,8 +171,22 @@
 </head>
 <body>
 
-<div class="container">
+<!-- Noscript fallback – helps search engines and users with JS disabled -->
+<noscript>
+  <div style="padding: 3rem 1rem; text-align:center; background:#0f172a; color:#f8fafc; min-height:100vh;">
+    <h1 style="font-family: 'Playfair Display', serif; color:#f59e0b; margin-bottom:1.5rem;">BPSC Daily Test</h1>
+    <p style="font-size:1.2rem; max-width:700px; margin:0 auto 2rem;">
+      Free daily mock tests and practice platform for BPSC Prelims & Mains preparation.<br>
+      Features real exam pattern questions, timer, instant scoring, and live leaderboard.
+    </p>
+    <p style="color:#cbd5e1;">
+      JavaScript is required to sign in with Google and start the test.<br>
+      Please enable JavaScript in your browser settings.
+    </p>
+  </div>
+</noscript>
 
+<div class="container">
   <header>
     <h1>BPSC Daily Test</h1>
     <div class="user-info">
@@ -195,7 +224,7 @@
     <h2 style="color:var(--success); text-align:center;">Test Completed!</h2>
     <p id="resultScore" style="font-size:1.6rem; text-align:center; margin:1.5rem 0;"></p>
     <p id="resultRank" style="text-align:center; font-size:1.2rem;"></p>
-    <button onclick="location.reload()" class="btn btn-primary" style="display:block; margin:2rem auto; width:220px;">
+    <button onclick="location.reload()" class="btn btn-primary" style="display:block; margin:2rem auto; width:220px; background:#f59e0b; color:#0f172a;">
       Back to Home
     </button>
   </div>
@@ -205,30 +234,26 @@
     <h2 style="text-align:center;">Leaderboard - Today's Test</h2>
     <div id="leaderboard" style="margin-top:1.5rem;"></div>
   </div>
-
 </div>
 
 <script type="module">
   const { initializeApp, getAnalytics, getAuth, signInWithPopup, GoogleAuthProvider,
          onAuthStateChanged, signOut } = window.firebaseModules;
 
-  
-const firebaseConfig = {
-  apiKey: "AIzaSyALLdLzpaEE6B0rp4R_M1XTLBq6zHfZcf0",
-  authDomain: "cronbpsc.firebaseapp.com",
-  projectId: "cronbpsc",
-  storageBucket: "cronbpsc.firebasestorage.app",
-  messagingSenderId: "66923138072",
-  appId: "1:66923138072:web:ea79ce45bc8c7c15c2476d",
-  measurementId: "G-Y37J7BL805"
-};
-
+  const firebaseConfig = {
+    apiKey: "AIzaSyALLdLzpaEE6B0rp4R_M1XTLBq6zHfZcf0",
+    authDomain: "cronbpsc.firebaseapp.com",
+    projectId: "cronbpsc",
+    storageBucket: "cronbpsc.firebasestorage.app",
+    messagingSenderId: "66923138072",
+    appId: "1:66923138072:web:ea79ce45bc8c7c15c2476d",
+    measurementId: "G-Y37J7BL805"
+  };
 
   const app = initializeApp(firebaseConfig);
   getAnalytics(app);
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
-
   const API_URL = "https://cronuserbackend.vercel.app";
 
   let currentTestId = null;
@@ -241,7 +266,6 @@ const firebaseConfig = {
       document.getElementById("btnLogout").classList.remove("hidden");
       document.getElementById("loginSection").classList.add("hidden");
       document.getElementById("testSection").classList.remove("hidden");
-
       await loadTodayTest();
     } else {
       document.getElementById("userDisplay").textContent = "Not logged in";
@@ -259,7 +283,7 @@ const firebaseConfig = {
       await signInWithPopup(auth, provider);
     } catch (error) {
       console.error("Google Sign-In Error:", error);
-      document.getElementById("authMessage").innerHTML = 
+      document.getElementById("authMessage").innerHTML =
         `<span style="color:var(--danger);">Login failed: ${error.message}</span>`;
     }
   };
@@ -305,7 +329,7 @@ const firebaseConfig = {
         statusEl.textContent = "Test has not started yet. Please check back later.";
         statusEl.classList.add("not-started");
         titleEl.textContent = data.title || "Upcoming Daily Test";
-        infoEl.textContent = data.startTime 
+        infoEl.textContent = data.startTime
           ? `Starts at: ${new Date(data.startTime).toLocaleString()}`
           : "";
         return;
@@ -320,7 +344,6 @@ const firebaseConfig = {
       statusEl.classList.add("hidden");
       titleEl.textContent = data.title || "BPSC Daily Test";
       infoEl.textContent = `Total Questions: ${data.totalQuestions || "?"}`;
-
       currentTestId = data.testId;
       userAnswers = {};
 
@@ -388,9 +411,9 @@ const firebaseConfig = {
 
       const data = await res.json();
 
-      document.getElementById("resultScore").textContent = 
+      document.getElementById("resultScore").textContent =
         `Your Score: ${data.score} out of ${data.totalQuestions}`;
-      document.getElementById("resultRank").textContent = 
+      document.getElementById("resultRank").textContent =
         `Your Rank: ${data.rank}`;
 
       document.getElementById("testSection").classList.add("hidden");
@@ -409,7 +432,6 @@ const firebaseConfig = {
     try {
       const res = await fetch(`${API_URL}/user/leaderboard/${testId}`);
       if (!res.ok) return;
-
       const users = await res.json();
       const container = document.getElementById("leaderboard");
       container.innerHTML = "";
@@ -442,6 +464,5 @@ const firebaseConfig = {
     }
   }
 </script>
-
 </body>
 </html>
