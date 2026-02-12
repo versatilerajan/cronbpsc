@@ -264,7 +264,7 @@
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
 
-  const API_URL = "https://cronuserbackend.vercel.app"; // ← double-check this URL is correct
+  const API_URL = "https://cronuserbackend.vercel.app";
 
   let currentTestId = null;
   let userAnswers = {};
@@ -283,17 +283,18 @@
   });
 
   document.getElementById("btnStartPaid").addEventListener("click", () => {
-    console.log("[PAID] Start Paid clicked");
+    console.log("[PAID] Start Paid clicked → showing login");
     document.getElementById("modeSelection").classList.add("hidden");
     document.getElementById("loginSection").classList.remove("hidden");
   });
 
   document.getElementById("btnGoogleLogin").addEventListener("click", async () => {
-    console.log("[AUTH] Google login clicked");
+    console.log("[AUTH] Google login button clicked");
     try {
       await signInWithPopup(auth, provider);
+      console.log("[AUTH] Google sign-in popup completed");
     } catch (error) {
-      console.error("[AUTH] Login error:", error);
+      console.error("[AUTH] Login failed:", error);
       document.getElementById("authMessage").innerHTML =
         `<span style="color:var(--danger);">Login failed: ${error.message}</span>`;
     }
@@ -308,20 +309,27 @@
   document.getElementById("btnSubmitTest").addEventListener("click", submitTest);
   document.getElementById("btnReviewTest").addEventListener("click", loadReview);
 
+  // ─── Auth State Listener ────────────────────────────────────
   onAuthStateChanged(auth, async (user) => {
     if (user) {
-      console.log("[AUTH] User logged in:", user.displayName);
+      console.log("[AUTH] User is signed in:", user.displayName || user.email);
       document.getElementById("userDisplay").textContent = user.displayName || user.email.split('@')[0];
       document.getElementById("btnLogout").classList.remove("hidden");
-      if (!isFreeMode && document.getElementById("loginSection").classList.contains("hidden") === false) {
-        document.getElementById("loginSection").classList.add("hidden");
-        document.getElementById("testSection").classList.remove("hidden");
-        await loadTest(); // paid test
+
+      // Hide login section and try to load paid test
+      document.getElementById("loginSection").classList.add("hidden");
+      document.getElementById("testSection").classList.remove("hidden");
+      document.getElementById("authMessage").innerHTML = "";
+
+      if (!isFreeMode) {
+        console.log("[PAID] User logged in → attempting to load today's paid test");
+        await loadTest();
       }
     } else {
-      console.log("[AUTH] No user logged in");
+      console.log("[AUTH] No user signed in (guest mode)");
       document.getElementById("userDisplay").textContent = "Guest";
       document.getElementById("btnLogout").classList.add("hidden");
+
       if (!isFreeMode) {
         document.getElementById("loginSection").classList.remove("hidden");
         document.getElementById("testSection").classList.add("hidden");
@@ -371,7 +379,7 @@
     document.getElementById("reviewContainer").classList.add("hidden");
   }
 
-  // ─── Load All Free Tests List ───────────────────────────────
+  // ─── Load Free Tests List ───────────────────────────────────
   async function loadFreeTestsList() {
     console.log("[FREE] Loading list of free tests...");
     const container = document.getElementById("freeTestsContainer");
@@ -389,7 +397,7 @@
       }
 
       const data = await res.json();
-      console.log("[FREE] List data received:", data);
+      console.log("[FREE] List data:", data);
 
       container.innerHTML = "";
       if (!data.success || !data.tests?.length) {
@@ -415,63 +423,46 @@
         container.appendChild(card);
       });
 
-      // Event delegation for all start buttons
+      // Event delegation for start buttons
       container.addEventListener("click", (e) => {
         const btn = e.target.closest(".start-free-btn");
         if (btn) {
           const testId = btn.getAttribute("data-test-id");
-          console.log("[FREE] Start button clicked for test ID:", testId);
+          console.log("[FREE] Start button clicked → ID:", testId);
           startSpecificFreeTest(testId);
         }
       });
-
     } catch (err) {
-      console.error("[FREE] Error loading list:", err);
+      console.error("[FREE] List load error:", err);
       container.innerHTML = `<p style='color:var(--danger); text-align:center;'>Error: ${err.message}</p>`;
     }
   }
 
-  // ─── Load Specific Free Test by ID ──────────────────────────
+  // ─── Load Specific Free Test ────────────────────────────────
   async function startSpecificFreeTest(testId) {
-    console.log("[FREE] Starting specific test ID:", testId);
+    console.log("[FREE] Loading specific test ID:", testId);
     resetUIForNewTest();
     document.getElementById("freeTestsList").classList.add("hidden");
     document.getElementById("testSection").classList.remove("hidden");
 
     const statusEl = document.getElementById("statusMessage");
-    const titleEl  = document.getElementById("testTitle");
-    const infoEl   = document.getElementById("testInfo");
-    const persistEl= document.getElementById("persistentNote");
-    const container= document.getElementById("questionsContainer");
-    const submitBtn= document.getElementById("btnSubmitTest");
-
     statusEl.textContent = "Loading test...";
-    titleEl.textContent  = "Loading...";
-    container.innerHTML  = "";
 
     try {
-      const url = `${API_URL}/free/test/${testId}`;
-      console.log("[FREE] Fetching specific test:", url);
-      const res = await fetch(url);
-      console.log("[FREE] Specific test status:", res.status);
-
-      if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(`HTTP ${res.status} - ${errText}`);
-      }
+      const res = await fetch(`${API_URL}/free/test/${testId}`);
+      if (!res.ok) throw new Error(`Failed to load test (HTTP ${res.status})`);
 
       const data = await res.json();
-      console.log("[FREE] Specific test data:", data);
-
-      if (!data.questions?.length) {
-        throw new Error("No questions found in this test");
-      }
+      console.log("[FREE] Test loaded:", data);
 
       currentTestId = data.testId;
-      titleEl.textContent = data.title || "Free UPSC Practice Test";
-      infoEl.textContent = `Total Questions: ${data.totalQuestions}`;
-      persistEl.textContent = data.note || "Persistent free practice test";
-      persistEl.classList.remove("hidden");
+      document.getElementById("testTitle").textContent = data.title || "Free UPSC Practice Test";
+      document.getElementById("testInfo").textContent = `Total Questions: ${data.totalQuestions}`;
+      document.getElementById("persistentNote").textContent = data.note || "Persistent free practice test";
+      document.getElementById("persistentNote").classList.remove("hidden");
+
+      const container = document.getElementById("questionsContainer");
+      container.innerHTML = "";
 
       data.questions.forEach(q => {
         const div = document.createElement("div");
@@ -495,17 +486,113 @@
       });
 
       statusEl.classList.add("hidden");
-      submitBtn.classList.remove("hidden");
-
+      document.getElementById("btnSubmitTest").classList.remove("hidden");
       await loadLeaderboardOrRank();
     } catch (err) {
-      console.error("[FREE] Error loading specific test:", err);
+      console.error("[FREE] Specific test error:", err);
       statusEl.textContent = `Failed to load test: ${err.message}`;
       statusEl.classList.add("status-no-test");
     }
   }
 
-  // ─── Submit Test (supports both free & paid) ────────────────
+  // ─── Load Paid Test ─────────────────────────────────────────
+  async function loadTest() {
+    console.log("[PAID] Attempting to load today's paid test...");
+    const statusEl = document.getElementById("statusMessage");
+    const titleEl = document.getElementById("testTitle");
+    const infoEl = document.getElementById("testInfo");
+    const container = document.getElementById("questionsContainer");
+    const submitBtn = document.getElementById("btnSubmitTest");
+
+    statusEl.textContent = "Loading paid test...";
+    titleEl.textContent = "Loading...";
+    container.innerHTML = "";
+
+    try {
+      const token = await auth.currentUser.getIdToken();
+      console.log("[PAID] Using ID token for auth");
+      const res = await fetch(`${API_URL}/user/today-test`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+
+      console.log("[PAID] /user/today-test status:", res.status);
+
+      if (!res.ok) {
+        if (res.status === 404) {
+          statusEl.textContent = "No paid test available today.";
+          statusEl.classList.add("status-no-test");
+          titleEl.textContent = "No Test Today";
+          return;
+        }
+        const errText = await res.text();
+        throw new Error(`HTTP ${res.status} - ${errText}`);
+      }
+
+      const data = await res.json();
+      console.log("[PAID] Test data:", data);
+
+      testStatus = data.status;
+
+      if (testStatus === "not_started") {
+        statusEl.textContent = `Test starts at ${new Date(data.startTimeIST).toLocaleString('en-IN')}`;
+        statusEl.classList.add("status-not-started");
+        titleEl.textContent = data.title || "Upcoming Paid Test";
+        return;
+      }
+
+      if (testStatus === "archived") {
+        statusEl.textContent = "This test has ended. You can review your attempt.";
+        statusEl.classList.add("status-archived");
+        titleEl.textContent = data.title || "Archived Test";
+        document.getElementById("btnReviewTest").classList.remove("hidden");
+        infoEl.textContent = "Ended " + new Date(data.endTimeIST).toLocaleString('en-IN');
+        return;
+      }
+
+      if (testStatus !== "active") {
+        statusEl.textContent = "Test not available right now.";
+        statusEl.classList.add("status-no-test");
+        return;
+      }
+
+      // Active paid test
+      statusEl.classList.add("hidden");
+      titleEl.textContent = data.title || "UPSC Daily Paid Test";
+      infoEl.textContent = `Total Questions: ${data.totalQuestions}`;
+      currentTestId = data.testId;
+
+      container.innerHTML = "";
+      data.questions.forEach(q => {
+        const div = document.createElement("div");
+        div.className = "question";
+        div.innerHTML = `
+          <h3>Q${q.questionNumber || "?"}. ${q.questionStatement || "?"}</h3>
+          <label class="option"><input type="radio" name="q_${q._id}" value="option1"> ${q.options?.option1 || "—"}</label>
+          <label class="option"><input type="radio" name="q_${q._id}" value="option2"> ${q.options?.option2 || "—"}</label>
+          <label class="option"><input type="radio" name="q_${q._id}" value="option3"> ${q.options?.option3 || "—"}</label>
+          <label class="option"><input type="radio" name="q_${q._id}" value="option4"> ${q.options?.option4 || "—"}</label>
+        `;
+        container.appendChild(div);
+
+        div.querySelectorAll("input").forEach(inp => {
+          inp.addEventListener("change", () => {
+            userAnswers[q._id] = inp.value;
+            div.querySelectorAll(".option").forEach(l => l.classList.remove("selected"));
+            inp.parentElement.classList.add("selected");
+          });
+        });
+      });
+
+      submitBtn.classList.remove("hidden");
+      await loadLeaderboardOrRank();
+    } catch (err) {
+      console.error("[PAID] Load test error:", err);
+      statusEl.textContent = `Error loading paid test: ${err.message}`;
+      statusEl.classList.add("status-no-test");
+    }
+  }
+
+  // ─── Submit Test ────────────────────────────────────────────
   async function submitTest() {
     const total = document.querySelectorAll(".question").length;
     const answered = Object.keys(userAnswers).length;
@@ -524,9 +611,7 @@
 
     try {
       let endpoint = isFreeMode ? `/free/submit-test/${currentTestId}` : `/user/submit-test/${currentTestId}`;
-      let headers = {
-        "Content-Type": "application/json"
-      };
+      let headers = { "Content-Type": "application/json" };
       if (!isFreeMode) {
         headers["Authorization"] = `Bearer ${await auth.currentUser.getIdToken()}`;
       }
@@ -539,7 +624,7 @@
 
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.message || "Submission failed");
+        throw new Error(errData.message || `Submission failed (HTTP ${res.status})`);
       }
 
       const data = await res.json();
@@ -560,13 +645,14 @@
 
       await loadLeaderboardOrRank(true);
     } catch (err) {
+      console.error("[SUBMIT] Error:", err);
       document.getElementById("submitMessage").textContent = err.message || "Submission failed";
       document.getElementById("submitMessage").className = "alert alert-error";
       document.getElementById("submitMessage").classList.remove("hidden");
     }
   }
 
-  // ─── Review (paid only) ─────────────────────────────────────
+  // ─── Review Paid Attempt ────────────────────────────────────
   async function loadReview() {
     if (!currentTestId || isFreeMode) return;
 
@@ -580,7 +666,7 @@
         headers: { "Authorization": `Bearer ${token}` }
       });
 
-      if (!res.ok) throw new Error("Review fetch failed");
+      if (!res.ok) throw new Error(`Review failed (HTTP ${res.status})`);
 
       const data = await res.json();
 
@@ -605,11 +691,12 @@
         container.appendChild(div);
       });
     } catch (err) {
+      console.error("[REVIEW] Error:", err);
       container.innerHTML = `<p style="color:var(--danger);">Could not load review: ${err.message}</p>`;
     }
   }
 
-  // ─── Leaderboard (free or paid) ─────────────────────────────
+  // ─── Leaderboard ────────────────────────────────────────────
   async function loadLeaderboardOrRank(afterSubmit = false) {
     if (!currentTestId) return;
 
@@ -621,7 +708,7 @@
       let headers = isFreeMode ? {} : { "Authorization": `Bearer ${await auth.currentUser.getIdToken()}` };
 
       const res = await fetch(`${API_URL}${endpoint}`, { headers });
-      if (!res.ok) throw new Error("Leaderboard fetch failed");
+      if (!res.ok) throw new Error(`Leaderboard fetch failed (HTTP ${res.status})`);
 
       const { leaderboard, totalParticipants, totalRankedParticipants } = await res.json();
 
@@ -652,11 +739,12 @@
 
       document.getElementById("leaderboardSection").classList.remove("hidden");
     } catch (err) {
+      console.error("[LEADERBOARD] Error:", err);
       lbEl.innerHTML = "<p style='color:var(--danger);'>Leaderboard unavailable</p>";
     }
   }
 
-  // Periodic refresh for leaderboard
+  // Periodic refresh
   setInterval(() => {
     if (currentTestId) loadLeaderboardOrRank();
   }, 90000);
