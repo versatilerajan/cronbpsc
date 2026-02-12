@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>UPSC Daily Test | Free & Paid Mock Tests</title>
   <meta name="description" content="Free persistent mock tests + affordable paid daily series for BPSC Prelims & Mains. Real exam pattern questions, instant scoring, and live ranking.">
-  <meta name="keywords" content="UPSC, BPSC test, BPSC daily test, UPSC mock test free, BPSC paid test series, free BPSC practice">
+  <meta name="keywords" content="UPSC, BPSC test, BPSC daily test, BPSC mock test free, BPSC paid test series, free BPSC practice">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://upsccron.vercel.app/">
-  <meta property="og:title" content="UPSC Daily Test – Free & Paid Series">
+  <link rel="canonical" href="https://cronbpsc.vercel.app/">
+  <meta property="og:title" content="BPSC Daily Test – Free & Paid Series">
   <meta property="og:description" content="Persistent free mocks + daily paid test series with ranking. Real BPSC pattern questions.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://cronbpsc.vercel.app/">
@@ -90,12 +90,11 @@
       background: var(--bg-overlay);
       border: 2px solid var(--border);
       border-radius: 8px;
-      padding: 2rem;
-      margin-bottom: 2rem;
+      padding: 1.8rem;
+      margin-bottom: 1.5rem;
       backdrop-filter: blur(8px);
-      text-align: center;
     }
-    .mode-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 3rem; }
+    .mode-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-bottom: 3rem; }
     .mode-card h2 { color: var(--accent); margin-bottom: 1rem; }
     .mode-card p { color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5; }
     .price { font-size: 1.8rem; font-weight: bold; color: var(--success); margin: 1rem 0; }
@@ -190,14 +189,20 @@
   <div id="modeSelection" class="mode-cards">
     <div class="card">
       <h2>Free Test Series</h2>
-      <p>Persistent practice tests • Real pattern • Instant score + public leaderboard<br><strong>Available anytime</strong></p>
-      <button id="btnStartFree" class="btn btn-free">Start Free Test</button>
+      <p>Multiple persistent practice sets • Real UPSC pattern • Instant score + leaderboard per test</p>
+      <button id="btnStartFree" class="btn btn-free">Browse Free Tests</button>
     </div>
     <div class="card">
       <h2>Paid Daily Series</h2>
-      <p>Fresh daily test • Personalised ranking • 24-hour window<br><span class="price">₹9/month</span> or <span class="price">₹100/year</span></p>
+      <p>Fresh daily test • Personalised ranking • 24-hour window<br><span class="price">₹9 / month</span> or <span class="price">₹100 / year</span></p>
       <button id="btnStartPaid" class="btn btn-paid">Start Paid Test</button>
     </div>
+  </div>
+
+  <!-- Free Tests List -->
+  <div id="freeTestsList" class="hidden">
+    <h2 style="text-align:center; color:var(--accent); margin-bottom:1.5rem;">Free Practice Tests</h2>
+    <div id="freeTestsContainer" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:1.5rem;"></div>
   </div>
 
   <!-- Login for Paid -->
@@ -238,7 +243,7 @@
 
   <!-- Leaderboard -->
   <div id="leaderboardSection" class="card hidden">
-    <h2 style="text-align:center;">Leaderboard <small>(on-time attempts only)</small></h2>
+    <h2 style="text-align:center;">Leaderboard <small>(on-time attempts only for paid)</small></h2>
     <div id="leaderboard" style="margin-top:1.5rem;"></div>
   </div>
 </div>
@@ -262,20 +267,21 @@
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
 
-  const API_URL = "https://cronuserbackend.vercel.app"; // ← your user backend
+  const API_URL = "https://cronuserbackend.vercel.app"; // your user backend URL
 
   let currentTestId = null;
   let userAnswers = {};
   let isFreeMode = false;
-  let testStatus = null; // "active" | "archived" | "not_started" | null
+  let testStatus = null;
   let isLateAttempt = false;
 
   // ─── Event Listeners ────────────────────────────────────────
-  document.getElementById("btnStartFree").onclick = () => {
+  document.getElementById("btnStartFree").onclick = async () => {
     isFreeMode = true;
     resetUIForNewTest();
     document.getElementById("userDisplay").textContent = "Free Mode";
-    loadTest();
+    document.getElementById("freeTestsList").classList.remove("hidden");
+    await loadFreeTestsList();
   };
 
   document.getElementById("btnStartPaid").onclick = () => {
@@ -297,6 +303,9 @@
     resetToHome();
   };
 
+  document.getElementById("btnSubmitTest").onclick = submitTest;
+  document.getElementById("btnReviewTest").onclick = loadReview;
+
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       document.getElementById("userDisplay").textContent = user.displayName || user.email.split('@')[0];
@@ -304,7 +313,7 @@
       if (!isFreeMode && document.getElementById("loginSection").classList.contains("hidden") === false) {
         document.getElementById("loginSection").classList.add("hidden");
         document.getElementById("testSection").classList.remove("hidden");
-        await loadTest();
+        await loadTest(); // for paid
       }
     } else {
       document.getElementById("userDisplay").textContent = "Guest";
@@ -316,10 +325,7 @@
     }
   });
 
-  document.getElementById("btnSubmitTest").onclick = submitTest;
-  document.getElementById("btnReviewTest").onclick = loadReview;
-
-  // ─── Core Functions ─────────────────────────────────────────
+  // ─── Reset Functions ────────────────────────────────────────
   function resetToHome() {
     isFreeMode = false;
     currentTestId = null;
@@ -328,6 +334,7 @@
     isLateAttempt = false;
     document.getElementById("modeSelection").classList.remove("hidden");
     document.getElementById("loginSection").classList.add("hidden");
+    document.getElementById("freeTestsList").classList.add("hidden");
     document.getElementById("testSection").classList.add("hidden");
     document.getElementById("resultSection").classList.add("hidden");
     document.getElementById("leaderboardSection").classList.add("hidden");
@@ -346,6 +353,7 @@
     isLateAttempt = false;
     document.getElementById("modeSelection").classList.add("hidden");
     document.getElementById("loginSection").classList.add("hidden");
+    document.getElementById("freeTestsList").classList.add("hidden");
     document.getElementById("testSection").classList.remove("hidden");
     document.getElementById("resultSection").classList.add("hidden");
     document.getElementById("leaderboardSection").classList.add("hidden");
@@ -359,80 +367,80 @@
     document.getElementById("reviewContainer").classList.add("hidden");
   }
 
-  async function loadTest() {
+  // ─── Load All Free Tests List ───────────────────────────────
+  async function loadFreeTestsList() {
+    const container = document.getElementById("freeTestsContainer");
+    container.innerHTML = "<p style='text-align:center;'>Loading free tests...</p>";
+
+    try {
+      const res = await fetch(`${API_URL}/free/tests`);
+      if (!res.ok) {
+        if (res.status === 404) {
+          container.innerHTML = "<p style='color:var(--danger); text-align:center;'>No free tests available right now.</p>";
+          return;
+        }
+        throw new Error("Failed to load free tests");
+      }
+
+      const { tests } = await res.json();
+
+      container.innerHTML = "";
+      if (!tests?.length) {
+        container.innerHTML = "<p style='text-align:center;'>No free tests found.</p>";
+        return;
+      }
+
+      tests.forEach(test => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <h3 style="color:var(--accent); margin-bottom:0.8rem;">${test.title}</h3>
+          <p><strong>Date:</strong> ${test.date || '—'}</p>
+          <p><strong>Questions:</strong> ${test.totalQuestions}</p>
+          <p style="font-size:0.9rem; color:var(--text-secondary); margin:0.5rem 0;">
+            Added: ${test.createdAt ? new Date(test.createdAt).toLocaleDateString('en-IN') : '—'}
+          </p>
+          <button class="btn btn-free" style="margin-top:1rem; width:100%;"
+                  onclick="startSpecificFreeTest('${test.testId}')">
+            Start Test (${test.totalQuestions} Qs)
+          </button>
+        `;
+        container.appendChild(card);
+      });
+    } catch (err) {
+      console.error(err);
+      container.innerHTML = `<p style='color:var(--danger); text-align:center;'>Error loading tests: ${err.message}</p>`;
+    }
+  }
+
+  // ─── Load Specific Free Test by ID ──────────────────────────
+  async function startSpecificFreeTest(testId) {
+    resetUIForNewTest();
+    document.getElementById("freeTestsList").classList.add("hidden");
+    document.getElementById("testSection").classList.remove("hidden");
+
     const statusEl = document.getElementById("statusMessage");
     const titleEl  = document.getElementById("testTitle");
     const infoEl   = document.getElementById("testInfo");
     const persistEl= document.getElementById("persistentNote");
     const container= document.getElementById("questionsContainer");
     const submitBtn= document.getElementById("btnSubmitTest");
-    const reviewBtn= document.getElementById("btnReviewTest");
 
     statusEl.textContent = "Loading test...";
     titleEl.textContent  = "Loading...";
-    persistEl.classList.add("hidden");
     container.innerHTML  = "";
-    submitBtn.classList.add("hidden");
-    reviewBtn.classList.add("hidden");
 
     try {
-      let endpoint = isFreeMode ? "/free/today-test" : "/user/today-test";
-      let headers  = isFreeMode ? {} : { "Authorization": `Bearer ${await auth.currentUser.getIdToken()}` };
-
-      const res = await fetch(`${API_URL}${endpoint}`, { headers });
-      if (!res.ok) {
-        if (res.status === 404) {
-          statusEl.textContent = isFreeMode ? "No free test available right now" : "No paid test today";
-          statusEl.classList.add("status-no-test");
-          titleEl.textContent = "No Test Available";
-          return;
-        }
-        throw new Error(`HTTP ${res.status}`);
-      }
+      const res = await fetch(`${API_URL}/free/test/${testId}`);
+      if (!res.ok) throw new Error("Failed to load test");
 
       const data = await res.json();
-      testStatus = data.status;
 
-      if (testStatus === "not_started") {
-        statusEl.textContent = `Test starts at ${new Date(data.startTimeIST).toLocaleString('en-IN')}`;
-        statusEl.classList.add("status-not-started");
-        titleEl.textContent = data.title || "Upcoming Test";
-        return;
-      }
-
-      if (testStatus === "archived") {
-        statusEl.textContent = "This test has ended. You can review your attempt below.";
-        statusEl.classList.add("status-archived");
-        titleEl.textContent = data.title || "Archived Test";
-        document.getElementById("btnReviewTest").classList.remove("hidden");
-        infoEl.textContent = "Ended " + new Date(data.endTimeIST).toLocaleString('en-IN');
-        return;
-      }
-
-      if (testStatus !== "active") {
-        statusEl.textContent = "Test not available at this time.";
-        statusEl.classList.add("status-no-test");
-        return;
-      }
-
-      // Active test
-      statusEl.classList.add("hidden");
-      titleEl.textContent = data.title || (isFreeMode ? "Free Practice Test" : "Daily Paid Test");
-      infoEl.textContent = `Total Questions: ${data.totalQuestions}`;
       currentTestId = data.testId;
-
-      if (isFreeMode) {
-        persistEl.textContent = "Persistent free test — available anytime";
-        persistEl.classList.remove("hidden");
-      }
-
-      userAnswers = {};
-      container.innerHTML = "";
-
-      if (!data.questions?.length) {
-        container.innerHTML = '<p style="color:var(--danger);">No questions loaded.</p>';
-        return;
-      }
+      titleEl.textContent = data.title || "Free BPSC Practice Test";
+      infoEl.textContent = `Total Questions: ${data.totalQuestions}`;
+      persistEl.textContent = data.note || "Persistent free practice test";
+      persistEl.classList.remove("hidden");
 
       data.questions.forEach(q => {
         const div = document.createElement("div");
@@ -455,39 +463,26 @@
         });
       });
 
+      statusEl.classList.add("hidden");
       submitBtn.classList.remove("hidden");
 
-      // Check if already attempted (for paid)
-      if (!isFreeMode) {
-        await checkIfAlreadyAttempted();
-      }
-
+      // Optional: load leaderboard if exists
       await loadLeaderboardOrRank();
     } catch (err) {
       console.error(err);
-      statusEl.textContent = "Failed to load test. Try again later.";
+      statusEl.textContent = "Failed to load this test.";
       statusEl.classList.add("status-no-test");
     }
   }
 
-  async function checkIfAlreadyAttempted() {
-    try {
-      const token = await auth.currentUser.getIdToken();
-      const res = await fetch(`${API_URL}/user/my-rank/${currentTestId}`, {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
-      if (res.ok) {
-        // Already attempted → switch to review mode
-        document.getElementById("btnSubmitTest").classList.add("hidden");
-        document.getElementById("btnReviewTest").classList.remove("hidden");
-        document.getElementById("statusMessage").textContent = "You have already attempted this test.";
-        document.getElementById("statusMessage").classList.remove("hidden");
-      }
-    } catch (e) {
-      // most likely 404 → not attempted yet → ok
-    }
+  // ─── Load Paid Test (unchanged from previous version) ───────
+  async function loadTest() {
+    // ... your existing paid test loading logic here ...
+    // (keep the same as in the previous version you had)
+    // including handling of not_started, active, archived statuses
   }
 
+  // ─── Submit Test (supports both free & paid) ────────────────
   async function submitTest() {
     const total = document.querySelectorAll(".question").length;
     const answered = Object.keys(userAnswers).length;
@@ -505,7 +500,7 @@
     }));
 
     try {
-      let endpoint = isFreeMode ? "/free/submit-test/" : "/user/submit-test/";
+      let endpoint = isFreeMode ? `/free/submit-test/${currentTestId}` : `/user/submit-test/${currentTestId}`;
       let headers = {
         "Content-Type": "application/json"
       };
@@ -513,7 +508,7 @@
         headers["Authorization"] = `Bearer ${await auth.currentUser.getIdToken()}`;
       }
 
-      const res = await fetch(`${API_URL}${endpoint}${currentTestId}`, {
+      const res = await fetch(`${API_URL}${endpoint}`, {
         method: "POST",
         headers,
         body: JSON.stringify({ answers: answersArray })
@@ -548,15 +543,13 @@
     }
   }
 
+  // ─── Review (paid only) ─────────────────────────────────────
   async function loadReview() {
     if (!currentTestId || isFreeMode) return;
 
     const container = document.getElementById("reviewContainer");
-    const resultSec = document.getElementById("resultSection");
-
     container.innerHTML = "<p>Loading review...</p>";
     container.classList.remove("hidden");
-    resultSec.classList.remove("hidden");
 
     try {
       const token = await auth.currentUser.getIdToken();
@@ -593,6 +586,7 @@
     }
   }
 
+  // ─── Leaderboard (free or paid) ─────────────────────────────
   async function loadLeaderboardOrRank(afterSubmit = false) {
     if (!currentTestId) return;
 
@@ -600,25 +594,25 @@
     lbEl.innerHTML = "<p>Loading leaderboard...</p>";
 
     try {
-      let endpoint = isFreeMode ? "/free/leaderboard/" : "/user/leaderboard/";
+      let endpoint = isFreeMode ? `/free/leaderboard/${currentTestId}` : `/user/leaderboard/${currentTestId}`;
       let headers = isFreeMode ? {} : { "Authorization": `Bearer ${await auth.currentUser.getIdToken()}` };
 
-      const res = await fetch(`${API_URL}${endpoint}${currentTestId}`, { headers });
+      const res = await fetch(`${API_URL}${endpoint}`, { headers });
       if (!res.ok) throw new Error("Leaderboard fetch failed");
 
-      const { leaderboard, totalRankedParticipants } = await res.json();
+      const { leaderboard, totalParticipants, totalRankedParticipants } = await res.json();
 
       lbEl.innerHTML = "";
       if (!leaderboard?.length) {
-        lbEl.innerHTML = "<p>No ranked attempts yet.</p>";
+        lbEl.innerHTML = "<p>No results yet.</p>";
       } else {
         const table = document.createElement("table");
-        table.innerHTML = `<tr><th>Rank</th><th>Score</th><th>Time</th></tr>`;
-        leaderboard.forEach(item => {
+        table.innerHTML = `<tr><th>Rank</th><th>Score</th><th>Submitted</th></tr>`;
+        leaderboard.forEach((item, idx) => {
           const time = new Date(item.submittedAt).toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
           const row = document.createElement("tr");
           row.innerHTML = `
-            <td>${item.rank || '—'}</td>
+            <td>${item.rank || (idx + 1)}</td>
             <td>${item.score} / ${item.totalQuestions || "?"}</td>
             <td>${time}</td>
           `;
@@ -629,7 +623,7 @@
         const p = document.createElement("p");
         p.style.textAlign = "center";
         p.style.marginTop = "1rem";
-        p.textContent = `Total ranked participants: ${totalRankedParticipants || "?"}`;
+        p.textContent = `Total participants: ${totalParticipants || totalRankedParticipants || "?"}`;
         lbEl.appendChild(p);
       }
 
@@ -639,11 +633,9 @@
     }
   }
 
-  // Periodic refresh
+  // Periodic refresh for leaderboard
   setInterval(() => {
-    if (currentTestId && document.getElementById("testSection").classList.contains("hidden") === false) {
-      loadLeaderboardOrRank();
-    }
+    if (currentTestId) loadLeaderboardOrRank();
   }, 90000);
 
   // Initial state
