@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>UPSC Daily Test | Free & Paid Mock Tests</title>
-  <meta name="description" content="Free persistent mock tests + affordable paid daily series for UPSC Prelims & Mains. Real exam pattern questions, instant scoring, and live ranking.">
+  <title>UPSC Daily Test | Free &amp; Paid Mock Tests</title>
+  <meta name="description" content="Free persistent mock tests + affordable paid daily series for UPSC Prelims &amp; Mains. Real exam pattern questions, instant scoring, and live ranking.">
   <meta name="keywords" content="UPSC, UPSC test, UPSC daily test, UPSC mock test free, UPSC paid test series, free UPSC practice">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://cronbpsc.vercel.app/">
-  <meta property="og:title" content="UPSC Daily Test – Free & Paid Series">
+  <meta property="og:title" content="UPSC Daily Test – Free &amp; Paid Series">
   <meta property="og:description" content="Persistent free mocks + daily paid test series with ranking. Real UPSC pattern questions.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://cronbpsc.vercel.app/">
@@ -17,6 +17,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-analytics.js";
@@ -32,6 +33,7 @@
       onAuthStateChanged, signOut
     };
   </script>
+
   <style>
     :root {
       --primary: #0f172a;
@@ -44,13 +46,16 @@
       --border: #334155;
       --bg-overlay: rgba(15, 23, 42, 0.92);
     }
-    * { margin:0; padding:0; box-sizing:border-box; }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
       font-family: 'JetBrains Mono', monospace;
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
       color: var(--text);
       min-height: 100vh;
     }
+
     body::before {
       content: '';
       position: fixed;
@@ -61,7 +66,15 @@
       pointer-events: none;
       z-index: 1;
     }
-    .container { max-width: 1100px; margin: 0 auto; padding: 1.5rem; position: relative; z-index: 2; }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      position: relative;
+      z-index: 2;
+    }
+
     header {
       display: flex;
       justify-content: space-between;
@@ -70,22 +83,43 @@
       border-bottom: 2px solid var(--border);
       margin-bottom: 2rem;
     }
-    h1 { font-family: 'Playfair Display', serif; font-size: 2.8rem; color: var(--accent); letter-spacing: -1px; }
-    .user-info { font-size: 0.95rem; color: var(--text-secondary); }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.8rem;
+      color: var(--accent);
+      letter-spacing: -1px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+    }
+
     .btn {
       padding: 0.8rem 1.8rem;
       border: none;
       border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
     }
-    .btn-free { background: var(--success); color: white; font-size: 1.1rem; }
-    .btn-paid { background: var(--accent); color: var(--primary); font-size: 1.1rem; }
+
+    .btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-free   { background: var(--success); color: white; font-size: 1.05rem; }
+    .btn-paid   { background: var(--accent);  color: var(--primary); font-size: 1.05rem; }
     .btn-review { background: #8b5cf6; color: white; }
     .btn-google { background: #4285f4; color: white; }
-    .btn-logout { background: var(--danger); color: white; }
+    .btn-logout { background: var(--danger); color: white; font-size: 0.85rem; padding: 0.5rem 1.1rem; }
+    .btn-back   { background: var(--secondary); color: var(--text-secondary); border: 1px solid var(--border); font-size: 0.9rem; padding: 0.5rem 1.1rem; }
+
     .hidden { display: none !important; }
+
+    /* ── Cards ── */
     .card {
       background: var(--bg-overlay);
       border: 2px solid var(--border);
@@ -94,20 +128,92 @@
       margin-bottom: 1.5rem;
       backdrop-filter: blur(8px);
     }
-    .mode-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-bottom: 3rem; }
-    .status-message {
-      font-size: 1.25rem;
-      font-weight: 600;
-      padding: 1.5rem;
-      border-radius: 8px;
-      margin: 2rem 0;
-      text-align: center;
-      background: rgba(30,41,59,0.7);
-      border: 1px solid var(--border);
+
+    /* ── Home mode-selection ── */
+    .mode-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
     }
-    .status-not-started { background: rgba(245,158,11,0.15); border-color: var(--accent); color: var(--accent); }
-    .status-archived  { background: rgba(139,92,246,0.15); border-color: #8b5cf6; color: #c4b5fd; }
-    .status-no-test   { background: rgba(239,68,68,0.15); border-color: var(--danger); color: var(--danger); }
+
+    .mode-card {
+      background: var(--bg-overlay);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+      backdrop-filter: blur(8px);
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .mode-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+    .mode-card h2 { font-family: 'Playfair Display', serif; font-size: 1.6rem; margin-bottom: 0.8rem; color: var(--accent); }
+    .mode-card p  { color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.7; }
+    .price { color: var(--accent); font-weight: 700; }
+
+    /* ── Section headings ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .section-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      color: var(--accent);
+      flex: 1;
+    }
+
+    /* ── Test list grid ── */
+    .tests-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .test-card {
+      background: var(--bg-overlay);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      backdrop-filter: blur(8px);
+      transition: border-color 0.2s, transform 0.2s;
+      cursor: pointer;
+    }
+
+    .test-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+    .test-card h3 { color: var(--accent); font-size: 1.1rem; margin-bottom: 1rem; line-height: 1.4; }
+
+    .test-card-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-bottom: 1.2rem;
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+    }
+
+    .test-card-meta span strong { color: var(--text); }
+
+    .test-card .btn { width: 100%; text-align: center; }
+
+    /* ── Status messages ── */
+    .status-message {
+      font-size: 1.1rem;
+      font-weight: 600;
+      padding: 1.2rem 1.5rem;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+      text-align: center;
+    }
+
+    .status-not-started { background: rgba(245,158,11,0.15); border: 1px solid var(--accent); color: var(--accent); }
+    .status-archived    { background: rgba(139,92,246,0.15); border: 1px solid #8b5cf6;        color: #c4b5fd; }
+    .status-no-test     { background: rgba(239,68,68,0.15);  border: 1px solid var(--danger);  color: var(--danger); }
+
+    /* ── Questions ── */
     .question {
       margin: 1.5rem 0;
       padding: 1.5rem;
@@ -115,18 +221,25 @@
       border-radius: 6px;
       border: 1px solid var(--border);
     }
-    .question h3 { margin-bottom: 1.2rem; color: var(--accent); font-size: 1.15rem; }
+
+    .question h3 { margin-bottom: 1.2rem; color: var(--accent); font-size: 1.05rem; line-height: 1.5; }
+
     .option {
       display: block;
-      margin: 0.8rem 0;
-      padding: 0.9rem;
+      margin: 0.7rem 0;
+      padding: 0.9rem 1rem;
       background: var(--secondary);
       border: 1px solid var(--border);
       border-radius: 4px;
       cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      font-size: 0.95rem;
     }
-    .option:hover { border-color: var(--accent); }
+
+    .option:hover   { border-color: var(--accent); }
     .option.selected { background: rgba(245,158,11,0.15); border-color: var(--accent); }
+
+    /* ── Alerts ── */
     .alert {
       padding: 1rem;
       border-radius: 4px;
@@ -134,37 +247,75 @@
       font-weight: 600;
       text-align: center;
     }
-    .alert-success { background: rgba(16,185,129,0.2); color: var(--success); border: 1px solid var(--success); }
-    .alert-warning { background: rgba(245,158,11,0.2); color: var(--accent); border: 1px solid var(--accent); }
-    .alert-error   { background: rgba(239,68,68,0.2); color: var(--danger); border: 1px solid var(--danger); }
-    .alert-info    { background: rgba(139,92,246,0.15); color: #c4b5fd; border: 1px solid #8b5cf6; }
-    #leaderboard table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-    }
-    #leaderboard th, #leaderboard td {
-      padding: 0.8rem;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-    }
+
+    .alert-success { background: rgba(16,185,129,0.2);  color: var(--success); border: 1px solid var(--success); }
+    .alert-warning { background: rgba(245,158,11,0.2);  color: var(--accent);  border: 1px solid var(--accent); }
+    .alert-error   { background: rgba(239,68,68,0.2);   color: var(--danger);  border: 1px solid var(--danger); }
+    .alert-info    { background: rgba(139,92,246,0.15); color: #c4b5fd;        border: 1px solid #8b5cf6; }
+
+    /* ── Leaderboard ── */
+    #leaderboard table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    #leaderboard th, #leaderboard td { padding: 0.8rem; text-align: left; border-bottom: 1px solid var(--border); }
     #leaderboard th { color: var(--accent); }
-    .rank-display { font-size: 2.2rem; font-weight: 700; color: var(--accent); text-align: center; margin: 1.5rem 0; }
+
+    /* ── Result ── */
+    .rank-display {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-align: center;
+      margin: 1.2rem 0;
+    }
+
+    .correct { color: var(--success); font-weight: bold; }
+    .wrong   { color: var(--danger);  font-weight: bold; }
+
     .persistent-note {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       color: var(--success);
-      margin-top: 0.5rem;
+      margin-top: 0.4rem;
       font-weight: 500;
     }
-    .correct { color: var(--success); font-weight: bold; }
-    .wrong   { color: var(--danger);   font-weight: bold; }
+
+    /* ── Loading spinner ── */
+    .loader {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-secondary);
+      font-size: 1rem;
+    }
+
+    .loader::after {
+      content: '';
+      display: inline-block;
+      width: 1.2rem;
+      height: 1.2rem;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-left: 0.6rem;
+      vertical-align: middle;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Login card ── */
+    #loginSection { text-align: center; }
+    #loginSection h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--accent); margin-bottom: 0.8rem; }
+    #loginSection p  { color: var(--text-secondary); margin-bottom: 2rem; line-height: 1.7; }
+
+    .login-btn-wrap { display: flex; justify-content: center; }
+
+    /* ── Responsive ── */
     @media (max-width: 768px) {
-      .mode-cards { grid-template-columns: 1fr; }
-      h1 { font-size: 2.2rem; }
+      .mode-cards, .tests-grid { grid-template-columns: 1fr; }
+      h1 { font-size: 2rem; }
       .container { padding: 1rem; }
     }
   </style>
 </head>
+
 <body>
 <noscript>
   <div style="padding: 3rem 1rem; text-align:center; background:#0f172a; color:#f8fafc; min-height:100vh;">
@@ -174,6 +325,8 @@
 </noscript>
 
 <div class="container">
+
+  <!-- ── Header ── -->
   <header>
     <h1>UPSC Daily Test</h1>
     <div class="user-info">
@@ -182,449 +335,613 @@
     </div>
   </header>
 
-  <!-- Mode Selection -->
-  <div id="modeSelection" class="mode-cards">
-    <div class="card">
-      <h2>Free Test Series</h2>
-      <p>Multiple persistent practice sets • Real UPSC pattern • Instant score + leaderboard per test</p>
-      <button id="btnStartFree" class="btn btn-free">Browse Free Tests</button>
-    </div>
-    <div class="card">
-      <h2>Paid Daily Series</h2>
-      <p>Fresh daily test • Personalised ranking • 24-hour window<br><span class="price">₹9 / month</span> or <span class="price">₹100 / year</span></p>
-      <button id="btnStartPaid" class="btn btn-paid">Start Paid Test</button>
-    </div>
-  </div>
-
-  <!-- Free Tests List -->
-  <div id="freeTestsList" class="hidden">
-    <h2 style="text-align:center; color:var(--accent); margin-bottom:1.5rem;">Free Practice Tests</h2>
-    <div id="freeTestsContainer" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:1.5rem;"></div>
-  </div>
-
-  <!-- Login for Paid -->
-  <div id="loginSection" class="card hidden">
-    <h2 style="color:var(--accent);">Sign in to access Paid Tests</h2>
-    <p style="color:var(--text-secondary); margin:1.5rem 0;">Unlock daily tests, ranking & detailed review</p>
-    <button id="btnGoogleLogin" class="btn btn-google" style="width:240px; margin:0 auto;">Sign in with Google</button>
-    <div id="authMessage" style="margin-top:1.5rem; min-height:1.5rem;"></div>
-  </div>
-
-  <!-- Test Area -->
-  <div id="testSection" class="hidden">
-    <div class="card">
-      <h2 id="testTitle">Loading...</h2>
-      <div id="statusMessage" class="status-message hidden"></div>
-      <p id="testInfo" style="color:var(--text-secondary); text-align:center; margin:1rem 0;"></p>
-      <p id="persistentNote" class="persistent-note hidden"></p>
-      <div id="lateWarning" class="alert alert-warning hidden">
-        You are late. The test is closed. Your attempt will not be ranked (practice mode).
+  <!-- ══════════════════════════════════════════
+       SECTION 1 — Home (mode selection)
+  ══════════════════════════════════════════ -->
+  <div id="sectionHome">
+    <div class="mode-cards">
+      <div class="mode-card">
+        <h2>Free Test Series</h2>
+        <p>Multiple persistent practice sets · Real UPSC pattern · Instant score + leaderboard per test</p>
+        <button id="btnBrowseFree" class="btn btn-free">Browse Free Tests</button>
       </div>
+      <div class="mode-card">
+        <h2>Paid Daily Series</h2>
+        <p>Fresh daily test · Personalised ranking · 24-hour window<br>
+          <span class="price">₹9 / month</span> &nbsp;or&nbsp; <span class="price">₹100 / year</span>
+        </p>
+        <button id="btnBrowsePaid" class="btn btn-paid">Browse Paid Tests</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 2 — Free Tests List
+  ══════════════════════════════════════════ -->
+  <div id="sectionFreeList" class="hidden">
+    <div class="section-header">
+      <button id="btnBackFromFreeList" class="btn btn-back">← Back</button>
+      <h2>Free Practice Tests</h2>
+    </div>
+    <div id="freeTestsGrid" class="tests-grid"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 3 — Paid Login Gate
+  ══════════════════════════════════════════ -->
+  <div id="sectionPaidLogin" class="card hidden">
+    <h2>Sign in to Access Paid Tests</h2>
+    <p>Unlock daily tests, personalised ranking &amp; detailed review</p>
+    <div class="login-btn-wrap">
+      <button id="btnGoogleLogin" class="btn btn-google">Sign in with Google</button>
+    </div>
+    <div id="authMessage" style="margin-top:1.2rem; min-height:1.5rem; text-align:center;"></div>
+    <div style="text-align:center; margin-top:1.5rem;">
+      <button id="btnBackFromLogin" class="btn btn-back">← Back</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 4 — Paid Tests List
+       (shown after login)
+  ══════════════════════════════════════════ -->
+  <div id="sectionPaidList" class="hidden">
+    <div class="section-header">
+      <button id="btnBackFromPaidList" class="btn btn-back">← Back</button>
+      <h2>Paid Daily Tests</h2>
+    </div>
+    <div id="paidTestsGrid" class="tests-grid"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 5 — Active Test (questions)
+  ══════════════════════════════════════════ -->
+  <div id="sectionTest" class="hidden">
+    <div class="card">
+      <div class="section-header" style="margin-bottom:0.5rem;">
+        <button id="btnBackFromTest" class="btn btn-back">← Back</button>
+        <h2 id="testTitle">Loading…</h2>
+      </div>
+
+      <p id="testInfo" style="color:var(--text-secondary); text-align:center; margin:0.8rem 0;"></p>
+      <p id="persistentNote" class="persistent-note hidden" style="text-align:center;"></p>
+
+      <div id="statusMessage" class="status-message hidden"></div>
+
+      <div id="lateWarning" class="alert alert-warning hidden">
+        You are submitting after the window closed. This will be recorded as a practice attempt and will not appear in the ranked leaderboard.
+      </div>
+
       <div id="questionsContainer"></div>
-      <button id="btnSubmitTest" class="btn btn-paid hidden" style="margin:2rem auto; display:block; width:220px;">Submit Test</button>
-      <button id="btnReviewTest" class="btn btn-review hidden" style="margin:2rem auto; display:block; width:220px;">Review Your Attempt</button>
+
+      <button id="btnSubmitTest" class="btn btn-paid hidden"
+              style="margin: 2rem auto; display: block; width: 220px;">
+        Submit Test
+      </button>
+
+      <button id="btnReviewTest" class="btn btn-review hidden"
+              style="margin: 2rem auto; display: block; width: 220px;">
+        Review Your Attempt
+      </button>
+
       <div id="submitMessage" class="alert hidden"></div>
     </div>
   </div>
 
-  <!-- Result / Review Area -->
-  <div id="resultSection" class="hidden card">
-    <h2 id="resultHeader" style="text-align:center;">Test Completed</h2>
+  <!-- ══════════════════════════════════════════
+       SECTION 6 — Result
+  ══════════════════════════════════════════ -->
+  <div id="sectionResult" class="card hidden">
+    <h2 id="resultHeader" style="text-align:center; font-family:'Playfair Display',serif; color:var(--accent);">Test Completed</h2>
     <p id="resultScore" style="font-size:1.8rem; text-align:center; margin:1.5rem 0;"></p>
     <p id="resultRank" class="rank-display"></p>
     <div id="reviewContainer" class="hidden"></div>
-    <button onclick="resetToHome()" class="btn" style="display:block; margin:2rem auto; width:220px; background:#f59e0b; color:#0f172a;">
+    <button id="btnResultBack" class="btn btn-paid"
+            style="display:block; margin:2rem auto; width:220px;">
       Back to Home
     </button>
   </div>
 
-  <!-- Leaderboard -->
-  <div id="leaderboardSection" class="card hidden">
-    <h2 style="text-align:center;">Leaderboard <small>(on-time attempts only for paid)</small></h2>
+  <!-- ══════════════════════════════════════════
+       SECTION 7 — Leaderboard (inline)
+  ══════════════════════════════════════════ -->
+  <div id="sectionLeaderboard" class="card hidden">
+    <h2 style="text-align:center; font-family:'Playfair Display',serif;">
+      Leaderboard
+      <small style="font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:var(--text-secondary);">
+        (ranked / on-time attempts only for paid)
+      </small>
+    </h2>
     <div id="leaderboard" style="margin-top:1.5rem;"></div>
   </div>
-</div>
 
+</div><!-- /container -->
+
+<!-- ══════════════════════════════════════════════════════════
+     APPLICATION SCRIPT
+══════════════════════════════════════════════════════════ -->
 <script type="module">
-  const { initializeApp, getAnalytics, getAuth, signInWithPopup, GoogleAuthProvider,
-         onAuthStateChanged, signOut } = window.firebaseModules;
+  const {
+    initializeApp, getAnalytics, getAuth, signInWithPopup,
+    GoogleAuthProvider, onAuthStateChanged, signOut
+  } = window.firebaseModules;
 
+  /* ── Firebase init ── */
   const firebaseConfig = {
-    apiKey: "AIzaSyALLdLzpaEE6B0rp4R_M1XTLBq6zHfZcf0",
-    authDomain: "cronbpsc.firebaseapp.com",
-    projectId: "cronbpsc",
-    storageBucket: "cronbpsc.firebasestorage.app",
+    apiKey:            "AIzaSyALLdLzpaEE6B0rp4R_M1XTLBq6zHfZcf0",
+    authDomain:        "cronbpsc.firebaseapp.com",
+    projectId:         "cronbpsc",
+    storageBucket:     "cronbpsc.firebasestorage.app",
     messagingSenderId: "66923138072",
-    appId: "1:66923138072:web:ea79ce45bc8c7c15c2476d",
-    measurementId: "G-Y37J7BL805"
+    appId:             "1:66923138072:web:ea79ce45bc8c7c15c2476d",
+    measurementId:     "G-Y37J7BL805"
   };
 
-  const app = initializeApp(firebaseConfig);
+  const app      = initializeApp(firebaseConfig);
   getAnalytics(app);
-  const auth = getAuth(app);
+  const auth     = getAuth(app);
   const provider = new GoogleAuthProvider();
 
   const API_URL = "https://cronuserbackend.vercel.app";
 
-  let currentTestId = null;
-  let userAnswers = {};
-  let isFreeMode = false;
-  let testStatus = null;
-  let isLateAttempt = false;
+  /* ── App state ── */
+  let currentUser     = null;
+  let currentTestId   = null;
+  let isFreeMode      = false;
+  let userAnswers     = {};
+  let isLateAttempt   = false;
 
-  // ─── Event Listeners ────────────────────────────────────────
-  document.getElementById("btnStartFree").addEventListener("click", async () => {
-    console.log("[FREE] Browse Free Tests clicked");
-    isFreeMode = true;
-    resetUIForNewTest();
-    document.getElementById("userDisplay").textContent = "Free Mode";
-    document.getElementById("freeTestsList").classList.remove("hidden");
-    await loadFreeTestsList();
-  });
+  /* ─────────────────────────────────────────────────
+     SECTION HELPERS — show exactly one section at a time
+  ───────────────────────────────────────────────── */
+  const SECTIONS = [
+    "sectionHome", "sectionFreeList", "sectionPaidLogin",
+    "sectionPaidList", "sectionTest", "sectionResult", "sectionLeaderboard"
+  ];
 
-  document.getElementById("btnStartPaid").addEventListener("click", () => {
-    console.log("[PAID] Start Paid clicked → showing login");
-    document.getElementById("modeSelection").classList.add("hidden");
-    document.getElementById("loginSection").classList.remove("hidden");
-  });
-
-  document.getElementById("btnGoogleLogin").addEventListener("click", async () => {
-    console.log("[AUTH] Google login button clicked");
-    try {
-      await signInWithPopup(auth, provider);
-      console.log("[AUTH] Google sign-in popup completed");
-    } catch (error) {
-      console.error("[AUTH] Login failed:", error);
-      document.getElementById("authMessage").innerHTML =
-        `<span style="color:var(--danger);">Login failed: ${error.message}</span>`;
-    }
-  });
-
-  document.getElementById("btnLogout").addEventListener("click", async () => {
-    console.log("[AUTH] Logout clicked");
-    await signOut(auth);
-    resetToHome();
-  });
-
-  document.getElementById("btnSubmitTest").addEventListener("click", submitTest);
-  document.getElementById("btnReviewTest").addEventListener("click", loadReview);
-
-  // ─── Auth State Listener ────────────────────────────────────
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      console.log("[AUTH] User is signed in:", user.displayName || user.email);
-      document.getElementById("userDisplay").textContent = user.displayName || user.email.split('@')[0];
-      document.getElementById("btnLogout").classList.remove("hidden");
-
-      // Hide login section and try to load paid test
-      document.getElementById("loginSection").classList.add("hidden");
-      document.getElementById("testSection").classList.remove("hidden");
-      document.getElementById("authMessage").innerHTML = "";
-
-      if (!isFreeMode) {
-        console.log("[PAID] User logged in → attempting to load today's paid test");
-        await loadTest();
-      }
-    } else {
-      console.log("[AUTH] No user signed in (guest mode)");
-      document.getElementById("userDisplay").textContent = "Guest";
-      document.getElementById("btnLogout").classList.add("hidden");
-
-      if (!isFreeMode) {
-        document.getElementById("loginSection").classList.remove("hidden");
-        document.getElementById("testSection").classList.add("hidden");
-      }
-    }
-  });
-
-  // ─── Reset Functions ────────────────────────────────────────
-  function resetToHome() {
-    isFreeMode = false;
-    currentTestId = null;
-    userAnswers = {};
-    testStatus = null;
-    isLateAttempt = false;
-    document.getElementById("modeSelection").classList.remove("hidden");
-    document.getElementById("loginSection").classList.add("hidden");
-    document.getElementById("freeTestsList").classList.add("hidden");
-    document.getElementById("testSection").classList.add("hidden");
-    document.getElementById("resultSection").classList.add("hidden");
-    document.getElementById("leaderboardSection").classList.add("hidden");
-    document.getElementById("questionsContainer").innerHTML = "";
-    document.getElementById("statusMessage").classList.add("hidden");
-    document.getElementById("lateWarning").classList.add("hidden");
-    document.getElementById("submitMessage").classList.add("hidden");
-    document.getElementById("persistentNote").classList.add("hidden");
-    document.getElementById("reviewContainer").classList.add("hidden");
+  function showOnly(...ids) {
+    SECTIONS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.add("hidden");
+    });
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove("hidden");
+    });
   }
 
-  function resetUIForNewTest() {
+  function resetTestState() {
     currentTestId = null;
-    userAnswers = {};
-    testStatus = null;
+    userAnswers   = {};
     isLateAttempt = false;
-    document.getElementById("modeSelection").classList.add("hidden");
-    document.getElementById("loginSection").classList.add("hidden");
-    document.getElementById("freeTestsList").classList.add("hidden");
-    document.getElementById("testSection").classList.remove("hidden");
-    document.getElementById("resultSection").classList.add("hidden");
-    document.getElementById("leaderboardSection").classList.add("hidden");
     document.getElementById("questionsContainer").innerHTML = "";
-    document.getElementById("statusMessage").classList.remove("hidden", "status-no-test", "status-archived");
+    document.getElementById("statusMessage").className = "status-message hidden";
+    document.getElementById("statusMessage").textContent = "";
     document.getElementById("lateWarning").classList.add("hidden");
     document.getElementById("btnSubmitTest").classList.add("hidden");
     document.getElementById("btnReviewTest").classList.add("hidden");
     document.getElementById("submitMessage").classList.add("hidden");
     document.getElementById("persistentNote").classList.add("hidden");
     document.getElementById("reviewContainer").classList.add("hidden");
+    document.getElementById("leaderboard").innerHTML = "";
   }
 
-  // ─── Load Free Tests List ───────────────────────────────────
+  /* ─────────────────────────────────────────────────
+     AUTH STATE
+  ───────────────────────────────────────────────── */
+  onAuthStateChanged(auth, (user) => {
+    currentUser = user;
+
+    if (user) {
+      document.getElementById("userDisplay").textContent =
+        user.displayName || user.email.split("@")[0];
+      document.getElementById("btnLogout").classList.remove("hidden");
+
+      /* If the paid-login gate is currently visible, move straight to paid list */
+      const loginVisible = !document.getElementById("sectionPaidLogin").classList.contains("hidden");
+      if (loginVisible) {
+        document.getElementById("authMessage").innerHTML = "";
+        showPaidTestsList();
+      }
+    } else {
+      currentUser = null;
+      document.getElementById("userDisplay").textContent = "Guest";
+      document.getElementById("btnLogout").classList.add("hidden");
+    }
+  });
+
+  /* ─────────────────────────────────────────────────
+     NAV — Home
+  ───────────────────────────────────────────────── */
+  document.getElementById("btnBrowseFree").addEventListener("click", () => {
+    isFreeMode = true;
+    showOnly("sectionFreeList");
+    loadFreeTestsList();
+  });
+
+  document.getElementById("btnBrowsePaid").addEventListener("click", () => {
+    isFreeMode = false;
+    if (currentUser) {
+      showOnly("sectionPaidList");
+      loadPaidTestsList();
+    } else {
+      showOnly("sectionPaidLogin");
+    }
+  });
+
+  /* ─────────────────────────────────────────────────
+     NAV — Back buttons
+  ───────────────────────────────────────────────── */
+  document.getElementById("btnBackFromFreeList").addEventListener("click", () => {
+    showOnly("sectionHome");
+  });
+
+  document.getElementById("btnBackFromLogin").addEventListener("click", () => {
+    document.getElementById("authMessage").innerHTML = "";
+    showOnly("sectionHome");
+  });
+
+  document.getElementById("btnBackFromPaidList").addEventListener("click", () => {
+    showOnly("sectionHome");
+  });
+
+  document.getElementById("btnBackFromTest").addEventListener("click", () => {
+    resetTestState();
+    if (isFreeMode) {
+      showOnly("sectionFreeList");
+      /* Re-render the list (already loaded, just show) */
+    } else {
+      showOnly("sectionPaidList");
+    }
+  });
+
+  document.getElementById("btnResultBack").addEventListener("click", () => {
+    resetTestState();
+    showOnly("sectionHome");
+  });
+
+  /* ─────────────────────────────────────────────────
+     AUTH — Google Login
+  ───────────────────────────────────────────────── */
+  document.getElementById("btnGoogleLogin").addEventListener("click", async () => {
+    document.getElementById("authMessage").innerHTML =
+      `<span style="color:var(--text-secondary);">Opening Google sign-in…</span>`;
+    try {
+      await signInWithPopup(auth, provider);
+      /* onAuthStateChanged callback will handle the redirect */
+    } catch (err) {
+      document.getElementById("authMessage").innerHTML =
+        `<span style="color:var(--danger);">Login failed: ${err.message}</span>`;
+    }
+  });
+
+  /* ─────────────────────────────────────────────────
+     AUTH — Logout
+  ───────────────────────────────────────────────── */
+  document.getElementById("btnLogout").addEventListener("click", async () => {
+    await signOut(auth);
+    resetTestState();
+    showOnly("sectionHome");
+  });
+
+  /* ─────────────────────────────────────────────────
+     FREE — Load tests list
+  ───────────────────────────────────────────────── */
   async function loadFreeTestsList() {
-    console.log("[FREE] Loading list of free tests...");
-    const container = document.getElementById("freeTestsContainer");
-    container.innerHTML = "<p style='text-align:center;'>Loading free tests...</p>";
+    const grid = document.getElementById("freeTestsGrid");
+    grid.innerHTML = `<div class="loader">Loading free tests</div>`;
 
     try {
-      const url = `${API_URL}/free/tests`;
-      console.log("[FREE] Fetching:", url);
-      const res = await fetch(url);
-      console.log("[FREE] List response status:", res.status);
-
-      if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(`HTTP ${res.status} - ${errText}`);
-      }
-
+      const res  = await fetch(`${API_URL}/free/tests`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      console.log("[FREE] List data:", data);
 
-      container.innerHTML = "";
+      grid.innerHTML = "";
+
       if (!data.success || !data.tests?.length) {
-        container.innerHTML = "<p style='text-align:center;'>No free tests found.</p>";
+        grid.innerHTML = `<p style="color:var(--text-secondary);">No free tests available right now.</p>`;
         return;
       }
 
       data.tests.forEach(test => {
         const card = document.createElement("div");
-        card.className = "card";
+        card.className = "test-card";
         card.innerHTML = `
-          <h3 style="color:var(--accent); margin-bottom:0.8rem;">${test.title}</h3>
-          <p><strong>Date:</strong> ${test.date || '—'}</p>
-          <p><strong>Questions:</strong> ${test.totalQuestions}</p>
-          <p style="font-size:0.9rem; color:var(--text-secondary); margin:0.5rem 0;">
-            Added: ${test.createdAt ? new Date(test.createdAt).toLocaleDateString('en-IN') : '—'}
-          </p>
-          <button class="btn btn-free start-free-btn" style="margin-top:1rem; width:100%;"
-                  data-test-id="${test.testId}">
-            Start Test (${test.totalQuestions} Qs)
+          <h3>${escHtml(test.title)}</h3>
+          <div class="test-card-meta">
+            <span><strong>Date:</strong> ${test.date || "—"}</span>
+            <span><strong>Questions:</strong> ${test.totalQuestions}</span>
+            <span style="font-size:0.82rem;">Added: ${test.createdAt ? new Date(test.createdAt).toLocaleDateString("en-IN") : "—"}</span>
+          </div>
+          <button class="btn btn-free start-free-btn" data-test-id="${escHtml(test.testId)}">
+            Start Test
           </button>
         `;
-        container.appendChild(card);
+        grid.appendChild(card);
       });
 
-      // Event delegation for start buttons
-      container.addEventListener("click", (e) => {
-        const btn = e.target.closest(".start-free-btn");
-        if (btn) {
-          const testId = btn.getAttribute("data-test-id");
-          console.log("[FREE] Start button clicked → ID:", testId);
-          startSpecificFreeTest(testId);
-        }
-      });
     } catch (err) {
-      console.error("[FREE] List load error:", err);
-      container.innerHTML = `<p style='color:var(--danger); text-align:center;'>Error: ${err.message}</p>`;
+      grid.innerHTML = `<p style="color:var(--danger);">Could not load tests: ${err.message}</p>`;
     }
   }
 
-  // ─── Load Specific Free Test ────────────────────────────────
-  async function startSpecificFreeTest(testId) {
-    console.log("[FREE] Loading specific test ID:", testId);
-    resetUIForNewTest();
-    document.getElementById("freeTestsList").classList.add("hidden");
-    document.getElementById("testSection").classList.remove("hidden");
+  /* Delegated click for free test cards */
+  document.getElementById("freeTestsGrid").addEventListener("click", (e) => {
+    const btn = e.target.closest(".start-free-btn");
+    if (btn) startFreeTest(btn.dataset.testId);
+  });
+
+  /* ─────────────────────────────────────────────────
+     FREE — Start a specific test
+  ───────────────────────────────────────────────── */
+  async function startFreeTest(testId) {
+    resetTestState();
+    isFreeMode = true;
+    showOnly("sectionTest");
+
+    document.getElementById("testTitle").textContent = "Loading…";
+    document.getElementById("testInfo").textContent  = "";
 
     const statusEl = document.getElementById("statusMessage");
-    statusEl.textContent = "Loading test...";
+    statusEl.textContent = "Fetching test…";
+    statusEl.className   = "status-message";
 
     try {
-      const res = await fetch(`${API_URL}/free/test/${testId}`);
-      if (!res.ok) throw new Error(`Failed to load test (HTTP ${res.status})`);
-
+      const res  = await fetch(`${API_URL}/free/test/${testId}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      console.log("[FREE] Test loaded:", data);
 
       currentTestId = data.testId;
       document.getElementById("testTitle").textContent = data.title || "Free UPSC Practice Test";
-      document.getElementById("testInfo").textContent = `Total Questions: ${data.totalQuestions}`;
-      document.getElementById("persistentNote").textContent = data.note || "Persistent free practice test";
-      document.getElementById("persistentNote").classList.remove("hidden");
+      document.getElementById("testInfo").textContent  = `Total Questions: ${data.totalQuestions}`;
 
-      const container = document.getElementById("questionsContainer");
-      container.innerHTML = "";
+      if (data.note) {
+        document.getElementById("persistentNote").textContent = data.note;
+        document.getElementById("persistentNote").classList.remove("hidden");
+      }
 
-      data.questions.forEach(q => {
-        const div = document.createElement("div");
-        div.className = "question";
-        div.innerHTML = `
-          <h3>Q${q.questionNumber || "?"}. ${q.questionStatement || "?"}</h3>
-          <label class="option"><input type="radio" name="q_${q._id}" value="option1"> ${q.options?.option1 || "—"}</label>
-          <label class="option"><input type="radio" name="q_${q._id}" value="option2"> ${q.options?.option2 || "—"}</label>
-          <label class="option"><input type="radio" name="q_${q._id}" value="option3"> ${q.options?.option3 || "—"}</label>
-          <label class="option"><input type="radio" name="q_${q._id}" value="option4"> ${q.options?.option4 || "—"}</label>
-        `;
-        container.appendChild(div);
-
-        div.querySelectorAll("input").forEach(inp => {
-          inp.addEventListener("change", () => {
-            userAnswers[q._id] = inp.value;
-            div.querySelectorAll(".option").forEach(l => l.classList.remove("selected"));
-            inp.parentElement.classList.add("selected");
-          });
-        });
-      });
-
-      statusEl.classList.add("hidden");
+      statusEl.className = "status-message hidden";
+      renderQuestions(data.questions);
       document.getElementById("btnSubmitTest").classList.remove("hidden");
-      await loadLeaderboardOrRank();
+      await loadLeaderboard();
+
     } catch (err) {
-      console.error("[FREE] Specific test error:", err);
       statusEl.textContent = `Failed to load test: ${err.message}`;
-      statusEl.classList.add("status-no-test");
+      statusEl.className   = "status-message status-no-test";
     }
   }
 
-  // ─── Load Paid Test ─────────────────────────────────────────
-  async function loadTest() {
-    console.log("[PAID] Attempting to load today's paid test...");
-    const statusEl = document.getElementById("statusMessage");
-    const titleEl = document.getElementById("testTitle");
-    const infoEl = document.getElementById("testInfo");
-    const container = document.getElementById("questionsContainer");
-    const submitBtn = document.getElementById("btnSubmitTest");
+  /* ─────────────────────────────────────────────────
+     PAID — Load tests list  (shows after login)
+  ───────────────────────────────────────────────── */
+  function showPaidTestsList() {
+    showOnly("sectionPaidList");
+    loadPaidTestsList();
+  }
 
-    statusEl.textContent = "Loading paid test...";
-    titleEl.textContent = "Loading...";
-    container.innerHTML = "";
+  async function loadPaidTestsList() {
+    const grid = document.getElementById("paidTestsGrid");
+    grid.innerHTML = `<div class="loader">Loading paid tests</div>`;
 
     try {
-      const token = await auth.currentUser.getIdToken();
-      console.log("[PAID] Using ID token for auth");
-      const res = await fetch(`${API_URL}/user/today-test`, {
+      const token = await currentUser.getIdToken();
+      const res   = await fetch(`${API_URL}/user/tests`, {
         headers: { "Authorization": `Bearer ${token}` }
       });
 
-      console.log("[PAID] /user/today-test status:", res.status);
-
-      if (!res.ok) {
-        if (res.status === 404) {
-          statusEl.textContent = "No paid test available today.";
-          statusEl.classList.add("status-no-test");
-          titleEl.textContent = "No Test Today";
-          return;
-        }
-        const errText = await res.text();
-        throw new Error(`HTTP ${res.status} - ${errText}`);
-      }
-
-      const data = await res.json();
-      console.log("[PAID] Test data:", data);
-
-      testStatus = data.status;
-
-      if (testStatus === "not_started") {
-        statusEl.textContent = `Test starts at ${new Date(data.startTimeIST).toLocaleString('en-IN')}`;
-        statusEl.classList.add("status-not-started");
-        titleEl.textContent = data.title || "Upcoming Paid Test";
-        return;
-      }
-
-      if (testStatus === "archived") {
-        statusEl.textContent = "This test has ended. You can review your attempt.";
-        statusEl.classList.add("status-archived");
-        titleEl.textContent = data.title || "Archived Test";
-        document.getElementById("btnReviewTest").classList.remove("hidden");
-        infoEl.textContent = "Ended " + new Date(data.endTimeIST).toLocaleString('en-IN');
-        return;
-      }
-
-      if (testStatus !== "active") {
-        statusEl.textContent = "Test not available right now.";
-        statusEl.classList.add("status-no-test");
-        return;
-      }
-
-      // Active paid test
-      statusEl.classList.add("hidden");
-      titleEl.textContent = data.title || "UPSC Daily Paid Test";
-      infoEl.textContent = `Total Questions: ${data.totalQuestions}`;
-      currentTestId = data.testId;
-
-      container.innerHTML = "";
-      data.questions.forEach(q => {
-        const div = document.createElement("div");
-        div.className = "question";
-        div.innerHTML = `
-          <h3>Q${q.questionNumber || "?"}. ${q.questionStatement || "?"}</h3>
-          <label class="option"><input type="radio" name="q_${q._id}" value="option1"> ${q.options?.option1 || "—"}</label>
-          <label class="option"><input type="radio" name="q_${q._id}" value="option2"> ${q.options?.option2 || "—"}</label>
-          <label class="option"><input type="radio" name="q_${q._id}" value="option3"> ${q.options?.option3 || "—"}</label>
-          <label class="option"><input type="radio" name="q_${q._id}" value="option4"> ${q.options?.option4 || "—"}</label>
+      /* Gracefully handle endpoints that may not yet return a list */
+      if (res.status === 404) {
+        /* Fallback: just offer "Today's Test" */
+        grid.innerHTML = "";
+        const card = document.createElement("div");
+        card.className = "test-card";
+        card.innerHTML = `
+          <h3>Today's Paid Test</h3>
+          <div class="test-card-meta">
+            <span><strong>Date:</strong> ${new Date().toLocaleDateString("en-IN")}</span>
+            <span><strong>Window:</strong> 24 hours</span>
+          </div>
+          <button class="btn btn-paid start-paid-btn" data-test-id="today">
+            Open Test
+          </button>
         `;
-        container.appendChild(div);
+        grid.appendChild(card);
+        return;
+      }
 
-        div.querySelectorAll("input").forEach(inp => {
-          inp.addEventListener("change", () => {
-            userAnswers[q._id] = inp.value;
-            div.querySelectorAll(".option").forEach(l => l.classList.remove("selected"));
-            inp.parentElement.classList.add("selected");
-          });
-        });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+
+      grid.innerHTML = "";
+
+      const tests = data.tests || (data.testId ? [data] : []);
+
+      if (!tests.length) {
+        grid.innerHTML = `<p style="color:var(--text-secondary);">No paid tests available right now.</p>`;
+        return;
+      }
+
+      tests.forEach(test => {
+        const statusBadge = test.status === "active"
+          ? `<span style="color:var(--success); font-weight:700;">● Live</span>`
+          : test.status === "not_started"
+          ? `<span style="color:var(--accent);">○ Upcoming</span>`
+          : `<span style="color:#8b5cf6;">✓ Archived</span>`;
+
+        const card = document.createElement("div");
+        card.className = "test-card";
+        card.innerHTML = `
+          <h3>${escHtml(test.title || "Daily Paid Test")}</h3>
+          <div class="test-card-meta">
+            <span><strong>Date:</strong> ${test.date || new Date().toLocaleDateString("en-IN")}</span>
+            <span><strong>Questions:</strong> ${test.totalQuestions || "—"}</span>
+            <span>${statusBadge}</span>
+          </div>
+          <button class="btn btn-paid start-paid-btn"
+                  data-test-id="${escHtml(test.testId || "today")}">
+            Open Test
+          </button>
+        `;
+        grid.appendChild(card);
       });
 
-      submitBtn.classList.remove("hidden");
-      await loadLeaderboardOrRank();
     } catch (err) {
-      console.error("[PAID] Load test error:", err);
-      statusEl.textContent = `Error loading paid test: ${err.message}`;
-      statusEl.classList.add("status-no-test");
+      grid.innerHTML = `<p style="color:var(--danger);">Could not load tests: ${err.message}</p>`;
     }
   }
 
-  // ─── Submit Test ────────────────────────────────────────────
+  /* Delegated click for paid test cards */
+  document.getElementById("paidTestsGrid").addEventListener("click", (e) => {
+    const btn = e.target.closest(".start-paid-btn");
+    if (btn) startPaidTest(btn.dataset.testId);
+  });
+
+  /* ─────────────────────────────────────────────────
+     PAID — Start a specific test
+  ───────────────────────────────────────────────── */
+  async function startPaidTest(testId) {
+    resetTestState();
+    isFreeMode = false;
+    showOnly("sectionTest");
+
+    document.getElementById("testTitle").textContent = "Loading…";
+    document.getElementById("testInfo").textContent  = "";
+
+    const statusEl = document.getElementById("statusMessage");
+    statusEl.textContent = "Fetching test…";
+    statusEl.className   = "status-message";
+
+    try {
+      const token = await currentUser.getIdToken();
+
+      /* Use today-test endpoint; if backend gains per-id endpoint, swap here */
+      const endpoint = testId === "today"
+        ? `${API_URL}/user/today-test`
+        : `${API_URL}/user/test/${testId}`;
+
+      const res  = await fetch(endpoint, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+
+      if (res.status === 404) {
+        statusEl.textContent = "No paid test available today.";
+        statusEl.className   = "status-message status-no-test";
+        document.getElementById("testTitle").textContent = "No Test Today";
+        return;
+      }
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const data = await res.json();
+      currentTestId = data.testId;
+
+      if (data.status === "not_started") {
+        statusEl.textContent = `Test starts at ${new Date(data.startTimeIST).toLocaleString("en-IN")}`;
+        statusEl.className   = "status-message status-not-started";
+        document.getElementById("testTitle").textContent = data.title || "Upcoming Paid Test";
+        return;
+      }
+
+      if (data.status === "archived") {
+        statusEl.textContent = "This test has ended. You can review your attempt below.";
+        statusEl.className   = "status-message status-archived";
+        document.getElementById("testTitle").textContent = data.title || "Archived Test";
+        document.getElementById("testInfo").textContent  =
+          "Ended: " + new Date(data.endTimeIST).toLocaleString("en-IN");
+        document.getElementById("btnReviewTest").classList.remove("hidden");
+        await loadLeaderboard();
+        return;
+      }
+
+      if (data.status !== "active") {
+        statusEl.textContent = "Test not available right now.";
+        statusEl.className   = "status-message status-no-test";
+        return;
+      }
+
+      /* Active test */
+      statusEl.className = "status-message hidden";
+      document.getElementById("testTitle").textContent = data.title || "UPSC Daily Paid Test";
+      document.getElementById("testInfo").textContent  = `Total Questions: ${data.totalQuestions}`;
+
+      renderQuestions(data.questions);
+      document.getElementById("btnSubmitTest").classList.remove("hidden");
+      await loadLeaderboard();
+
+    } catch (err) {
+      statusEl.textContent = `Error loading test: ${err.message}`;
+      statusEl.className   = "status-message status-no-test";
+    }
+  }
+
+  /* ─────────────────────────────────────────────────
+     RENDER QUESTIONS (shared by free & paid)
+  ───────────────────────────────────────────────── */
+  function renderQuestions(questions) {
+    const container = document.getElementById("questionsContainer");
+    container.innerHTML = "";
+
+    questions.forEach(q => {
+      const div = document.createElement("div");
+      div.className = "question";
+      div.innerHTML = `
+        <h3>Q${q.questionNumber || "?"}. ${escHtml(q.questionStatement || "")}</h3>
+        <label class="option"><input type="radio" name="q_${q._id}" value="option1"> ${escHtml(q.options?.option1 || "—")}</label>
+        <label class="option"><input type="radio" name="q_${q._id}" value="option2"> ${escHtml(q.options?.option2 || "—")}</label>
+        <label class="option"><input type="radio" name="q_${q._id}" value="option3"> ${escHtml(q.options?.option3 || "—")}</label>
+        <label class="option"><input type="radio" name="q_${q._id}" value="option4"> ${escHtml(q.options?.option4 || "—")}</label>
+      `;
+      container.appendChild(div);
+
+      div.querySelectorAll("input[type=radio]").forEach(inp => {
+        inp.addEventListener("change", () => {
+          userAnswers[q._id] = inp.value;
+          div.querySelectorAll(".option").forEach(l => l.classList.remove("selected"));
+          inp.parentElement.classList.add("selected");
+        });
+      });
+    });
+  }
+
+  /* ─────────────────────────────────────────────────
+     SUBMIT
+  ───────────────────────────────────────────────── */
+  document.getElementById("btnSubmitTest").addEventListener("click", submitTest);
+
   async function submitTest() {
-    const total = document.querySelectorAll(".question").length;
+    const total    = document.querySelectorAll(".question").length;
     const answered = Object.keys(userAnswers).length;
 
     if (answered < total) {
-      alert(`Please answer all ${total} questions (${answered} answered).`);
+      alert(`Please answer all ${total} questions. (${answered} answered so far)`);
       return;
     }
-
     if (!confirm("Are you sure you want to submit?")) return;
 
     const answersArray = Object.entries(userAnswers).map(([qid, opt]) => ({
-      questionId: qid,
-      selectedOption: opt
+      questionId: qid, selectedOption: opt
     }));
 
-    try {
-      let endpoint = isFreeMode ? `/free/submit-test/${currentTestId}` : `/user/submit-test/${currentTestId}`;
-      let headers = { "Content-Type": "application/json" };
-      if (!isFreeMode) {
-        headers["Authorization"] = `Bearer ${await auth.currentUser.getIdToken()}`;
-      }
+    const submitMsg = document.getElementById("submitMessage");
+    submitMsg.textContent = "Submitting…";
+    submitMsg.className   = "alert alert-info";
 
-      const res = await fetch(`${API_URL}${endpoint}`, {
-        method: "POST",
+    try {
+      const endpoint = isFreeMode
+        ? `/free/submit-test/${currentTestId}`
+        : `/user/submit-test/${currentTestId}`;
+
+      const headers = { "Content-Type": "application/json" };
+      if (!isFreeMode) headers["Authorization"] = `Bearer ${await currentUser.getIdToken()}`;
+
+      const res  = await fetch(`${API_URL}${endpoint}`, {
+        method:  "POST",
         headers,
-        body: JSON.stringify({ answers: answersArray })
+        body:    JSON.stringify({ answers: answersArray })
       });
 
       if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.message || `Submission failed (HTTP ${res.status})`);
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || `HTTP ${res.status}`);
       }
 
       const data = await res.json();
@@ -634,123 +951,159 @@
         document.getElementById("lateWarning").classList.remove("hidden");
       }
 
-      document.getElementById("resultScore").textContent = `Score: ${data.score} / ${data.totalQuestions}`;
-      document.getElementById("resultRank").textContent = isFreeMode
-        ? data.rankDisplay || `Rank: ${data.yourRank}`
-        : (data.isRanked ? `Rank: ${data.preliminaryRank}` : "Practice attempt – no rank");
+      /* Show result section */
+      document.getElementById("resultHeader").textContent = "Test Completed";
+      document.getElementById("resultScore").textContent  = `Score: ${data.score} / ${data.totalQuestions}`;
+      document.getElementById("resultRank").textContent   = isFreeMode
+        ? (data.rankDisplay || `Rank: ${data.yourRank}`)
+        : (data.isRanked ? `Rank: ${data.preliminaryRank}` : "Practice attempt — no rank");
 
-      document.getElementById("testSection").classList.add("hidden");
-      document.getElementById("resultSection").classList.remove("hidden");
+      document.getElementById("reviewContainer").classList.add("hidden");
       document.getElementById("btnReviewTest").classList.remove("hidden");
+      showOnly("sectionResult", "sectionLeaderboard");
+      await loadLeaderboard();
 
-      await loadLeaderboardOrRank(true);
     } catch (err) {
-      console.error("[SUBMIT] Error:", err);
-      document.getElementById("submitMessage").textContent = err.message || "Submission failed";
-      document.getElementById("submitMessage").className = "alert alert-error";
-      document.getElementById("submitMessage").classList.remove("hidden");
+      submitMsg.textContent = err.message || "Submission failed.";
+      submitMsg.className   = "alert alert-error";
     }
   }
 
-  // ─── Review Paid Attempt ────────────────────────────────────
+  /* ─────────────────────────────────────────────────
+     REVIEW (paid only)
+  ───────────────────────────────────────────────── */
+  document.getElementById("btnReviewTest").addEventListener("click", loadReview);
+
   async function loadReview() {
     if (!currentTestId || isFreeMode) return;
 
     const container = document.getElementById("reviewContainer");
-    container.innerHTML = "<p>Loading review...</p>";
+    container.innerHTML = "<p>Loading review…</p>";
     container.classList.remove("hidden");
 
+    /* Make result section visible if we came from the archived-test view */
+    if (document.getElementById("sectionResult").classList.contains("hidden")) {
+      showOnly("sectionResult", "sectionLeaderboard");
+    }
+
     try {
-      const token = await auth.currentUser.getIdToken();
-      const res = await fetch(`${API_URL}/user/review-test/${currentTestId}`, {
+      const token = await currentUser.getIdToken();
+      const res   = await fetch(`${API_URL}/user/review-test/${currentTestId}`, {
         headers: { "Authorization": `Bearer ${token}` }
       });
-
-      if (!res.ok) throw new Error(`Review failed (HTTP ${res.status})`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
       const data = await res.json();
 
-      document.getElementById("resultHeader").textContent = data.isLate ? "Practice Attempt Review" : "Your Performance Review";
-      document.getElementById("resultScore").textContent = `Score: ${data.score} / ${data.totalQuestions}`;
-      if (data.rankInfo) {
-        document.getElementById("resultRank").textContent = `Rank: ${data.rankInfo.rank} / ${data.rankInfo.totalParticipants}`;
-      } else {
-        document.getElementById("resultRank").textContent = "No rank (late attempt)";
-      }
+      document.getElementById("resultHeader").textContent =
+        data.isLate ? "Practice Attempt Review" : "Your Performance Review";
+      document.getElementById("resultScore").textContent =
+        `Score: ${data.score} / ${data.totalQuestions}`;
+      document.getElementById("resultRank").textContent = data.rankInfo
+        ? `Rank: ${data.rankInfo.rank} / ${data.rankInfo.totalParticipants}`
+        : "No rank (late attempt)";
 
       container.innerHTML = "";
       data.questions.forEach(q => {
         const div = document.createElement("div");
         div.className = "question";
         div.innerHTML = `
-          <h3>Q${q.questionNumber}. ${q.questionStatement}</h3>
-          <p><strong>Your answer:</strong> <span class="${q.isCorrect ? 'correct' : 'wrong'}">${q.yourAnswer || "—"}</span></p>
-          <p><strong>Correct answer:</strong> <span class="correct">${q.correctAnswer}</span></p>
-          <p style="margin-top:1rem;">${q.isCorrect ? "Correct ✓" : "Incorrect ✗"}</p>
+          <h3>Q${q.questionNumber}. ${escHtml(q.questionStatement)}</h3>
+          <p><strong>Your answer:</strong>
+            <span class="${q.isCorrect ? 'correct' : 'wrong'}">${escHtml(q.yourAnswer || "—")}</span>
+          </p>
+          <p><strong>Correct answer:</strong>
+            <span class="correct">${escHtml(q.correctAnswer)}</span>
+          </p>
+          <p style="margin-top:0.8rem;">${q.isCorrect ? "✓ Correct" : "✗ Incorrect"}</p>
         `;
         container.appendChild(div);
       });
+
     } catch (err) {
-      console.error("[REVIEW] Error:", err);
       container.innerHTML = `<p style="color:var(--danger);">Could not load review: ${err.message}</p>`;
     }
   }
 
-  // ─── Leaderboard ────────────────────────────────────────────
-  async function loadLeaderboardOrRank(afterSubmit = false) {
+  /* ─────────────────────────────────────────────────
+     LEADERBOARD
+  ───────────────────────────────────────────────── */
+  async function loadLeaderboard() {
     if (!currentTestId) return;
 
     const lbEl = document.getElementById("leaderboard");
-    lbEl.innerHTML = "<p>Loading leaderboard...</p>";
+    lbEl.innerHTML = `<div class="loader">Loading leaderboard</div>`;
+    document.getElementById("sectionLeaderboard").classList.remove("hidden");
 
     try {
-      let endpoint = isFreeMode ? `/free/leaderboard/${currentTestId}` : `/user/leaderboard/${currentTestId}`;
-      let headers = isFreeMode ? {} : { "Authorization": `Bearer ${await auth.currentUser.getIdToken()}` };
+      const endpoint = isFreeMode
+        ? `/free/leaderboard/${currentTestId}`
+        : `/user/leaderboard/${currentTestId}`;
 
-      const res = await fetch(`${API_URL}${endpoint}`, { headers });
-      if (!res.ok) throw new Error(`Leaderboard fetch failed (HTTP ${res.status})`);
+      const headers = {};
+      if (!isFreeMode && currentUser) {
+        headers["Authorization"] = `Bearer ${await currentUser.getIdToken()}`;
+      }
+
+      const res  = await fetch(`${API_URL}${endpoint}`, { headers });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
       const { leaderboard, totalParticipants, totalRankedParticipants } = await res.json();
 
       lbEl.innerHTML = "";
-      if (!leaderboard?.length) {
-        lbEl.innerHTML = "<p>No results yet.</p>";
-      } else {
-        const table = document.createElement("table");
-        table.innerHTML = `<tr><th>Rank</th><th>Score</th><th>Submitted</th></tr>`;
-        leaderboard.forEach((item, idx) => {
-          const time = new Date(item.submittedAt).toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
-          const row = document.createElement("tr");
-          row.innerHTML = `
-            <td>${item.rank || (idx + 1)}</td>
-            <td>${item.score} / ${item.totalQuestions || "?"}</td>
-            <td>${time}</td>
-          `;
-          table.appendChild(row);
-        });
-        lbEl.appendChild(table);
 
-        const p = document.createElement("p");
-        p.style.textAlign = "center";
-        p.style.marginTop = "1rem";
-        p.textContent = `Total participants: ${totalParticipants || totalRankedParticipants || "?"}`;
-        lbEl.appendChild(p);
+      if (!leaderboard?.length) {
+        lbEl.innerHTML = "<p style='color:var(--text-secondary);'>No results yet. Be the first!</p>";
+        return;
       }
 
-      document.getElementById("leaderboardSection").classList.remove("hidden");
+      const table = document.createElement("table");
+      table.innerHTML = `<tr><th>Rank</th><th>Score</th><th>Submitted</th></tr>`;
+      leaderboard.forEach((item, idx) => {
+        const time = new Date(item.submittedAt).toLocaleTimeString("en-IN", {
+          hour: "2-digit", minute: "2-digit"
+        });
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${item.rank ?? idx + 1}</td>
+          <td>${item.score} / ${item.totalQuestions ?? "?"}</td>
+          <td>${time}</td>
+        `;
+        table.appendChild(row);
+      });
+      lbEl.appendChild(table);
+
+      const total = totalParticipants ?? totalRankedParticipants ?? "?";
+      const note  = document.createElement("p");
+      note.style.cssText = "text-align:center; margin-top:1rem; color:var(--text-secondary); font-size:0.9rem;";
+      note.textContent = `Total participants: ${total}`;
+      lbEl.appendChild(note);
+
     } catch (err) {
-      console.error("[LEADERBOARD] Error:", err);
-      lbEl.innerHTML = "<p style='color:var(--danger);'>Leaderboard unavailable</p>";
+      lbEl.innerHTML = `<p style="color:var(--danger);">Leaderboard unavailable: ${err.message}</p>`;
     }
   }
 
-  // Periodic refresh
+  /* Periodic refresh */
   setInterval(() => {
-    if (currentTestId) loadLeaderboardOrRank();
-  }, 90000);
+    if (currentTestId) loadLeaderboard();
+  }, 90_000);
 
-  // Initial state
-  document.getElementById("modeSelection").classList.remove("hidden");
+  /* ─────────────────────────────────────────────────
+     UTILITY
+  ───────────────────────────────────────────────── */
+  function escHtml(str) {
+    return String(str ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  /* ─────────────────────────────────────────────────
+     INITIAL STATE — show home
+  ───────────────────────────────────────────────── */
+  showOnly("sectionHome");
 </script>
 </body>
 </html>
