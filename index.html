@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>UPSC Daily Test | Free & Paid Mock Tests</title>
-  <meta name="description" content="Free persistent mock tests + affordable paid daily series for BPSC Prelims & Mains. Real exam pattern questions, instant scoring, and live ranking.">
-  <meta name="keywords" content="UPSC, BPSC test, BPSC daily test, BPSC mock test free, BPSC paid test series, free BPSC practice">
+  <meta name="description" content="Free persistent mock tests + affordable paid daily series for UPSC Prelims & Mains. Real exam pattern questions, instant scoring, and live ranking.">
+  <meta name="keywords" content="UPSC, UPSC test, UPSC daily test, UPSC mock test free, UPSC paid test series, free UPSC practice">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://cronbpsc.vercel.app/">
-  <meta property="og:title" content="BPSC Daily Test – Free & Paid Series">
-  <meta property="og:description" content="Persistent free mocks + daily paid test series with ranking. Real BPSC pattern questions.">
+  <meta property="og:title" content="UPSC Daily Test – Free & Paid Series">
+  <meta property="og:description" content="Persistent free mocks + daily paid test series with ranking. Real UPSC pattern questions.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://cronbpsc.vercel.app/">
   <meta property="og:image" content="https://cronbpsc.vercel.app/og-bpsc.jpg">
@@ -95,9 +95,6 @@
       backdrop-filter: blur(8px);
     }
     .mode-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-bottom: 3rem; }
-    .mode-card h2 { color: var(--accent); margin-bottom: 1rem; }
-    .mode-card p { color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5; }
-    .price { font-size: 1.8rem; font-weight: bold; color: var(--success); margin: 1rem 0; }
     .status-message {
       font-size: 1.25rem;
       font-weight: 600;
@@ -267,7 +264,7 @@
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
 
-  const API_URL = "https://cronuserbackend.vercel.app"; // your user backend URL
+  const API_URL = "https://cronuserbackend.vercel.app"; // ← double-check this URL is correct
 
   let currentTestId = null;
   let userAnswers = {};
@@ -276,46 +273,53 @@
   let isLateAttempt = false;
 
   // ─── Event Listeners ────────────────────────────────────────
-  document.getElementById("btnStartFree").onclick = async () => {
+  document.getElementById("btnStartFree").addEventListener("click", async () => {
+    console.log("[FREE] Browse Free Tests clicked");
     isFreeMode = true;
     resetUIForNewTest();
     document.getElementById("userDisplay").textContent = "Free Mode";
     document.getElementById("freeTestsList").classList.remove("hidden");
     await loadFreeTestsList();
-  };
+  });
 
-  document.getElementById("btnStartPaid").onclick = () => {
+  document.getElementById("btnStartPaid").addEventListener("click", () => {
+    console.log("[PAID] Start Paid clicked");
     document.getElementById("modeSelection").classList.add("hidden");
     document.getElementById("loginSection").classList.remove("hidden");
-  };
+  });
 
-  document.getElementById("btnGoogleLogin").onclick = async () => {
+  document.getElementById("btnGoogleLogin").addEventListener("click", async () => {
+    console.log("[AUTH] Google login clicked");
     try {
       await signInWithPopup(auth, provider);
     } catch (error) {
+      console.error("[AUTH] Login error:", error);
       document.getElementById("authMessage").innerHTML =
         `<span style="color:var(--danger);">Login failed: ${error.message}</span>`;
     }
-  };
+  });
 
-  document.getElementById("btnLogout").onclick = async () => {
+  document.getElementById("btnLogout").addEventListener("click", async () => {
+    console.log("[AUTH] Logout clicked");
     await signOut(auth);
     resetToHome();
-  };
+  });
 
-  document.getElementById("btnSubmitTest").onclick = submitTest;
-  document.getElementById("btnReviewTest").onclick = loadReview;
+  document.getElementById("btnSubmitTest").addEventListener("click", submitTest);
+  document.getElementById("btnReviewTest").addEventListener("click", loadReview);
 
   onAuthStateChanged(auth, async (user) => {
     if (user) {
+      console.log("[AUTH] User logged in:", user.displayName);
       document.getElementById("userDisplay").textContent = user.displayName || user.email.split('@')[0];
       document.getElementById("btnLogout").classList.remove("hidden");
       if (!isFreeMode && document.getElementById("loginSection").classList.contains("hidden") === false) {
         document.getElementById("loginSection").classList.add("hidden");
         document.getElementById("testSection").classList.remove("hidden");
-        await loadTest(); // for paid
+        await loadTest(); // paid test
       }
     } else {
+      console.log("[AUTH] No user logged in");
       document.getElementById("userDisplay").textContent = "Guest";
       document.getElementById("btnLogout").classList.add("hidden");
       if (!isFreeMode) {
@@ -369,28 +373,31 @@
 
   // ─── Load All Free Tests List ───────────────────────────────
   async function loadFreeTestsList() {
+    console.log("[FREE] Loading list of free tests...");
     const container = document.getElementById("freeTestsContainer");
     container.innerHTML = "<p style='text-align:center;'>Loading free tests...</p>";
 
     try {
-      const res = await fetch(`${API_URL}/free/tests`);
+      const url = `${API_URL}/free/tests`;
+      console.log("[FREE] Fetching:", url);
+      const res = await fetch(url);
+      console.log("[FREE] List response status:", res.status);
+
       if (!res.ok) {
-        if (res.status === 404) {
-          container.innerHTML = "<p style='color:var(--danger); text-align:center;'>No free tests available right now.</p>";
-          return;
-        }
-        throw new Error("Failed to load free tests");
+        const errText = await res.text();
+        throw new Error(`HTTP ${res.status} - ${errText}`);
       }
 
-      const { tests } = await res.json();
+      const data = await res.json();
+      console.log("[FREE] List data received:", data);
 
       container.innerHTML = "";
-      if (!tests?.length) {
+      if (!data.success || !data.tests?.length) {
         container.innerHTML = "<p style='text-align:center;'>No free tests found.</p>";
         return;
       }
 
-      tests.forEach(test => {
+      data.tests.forEach(test => {
         const card = document.createElement("div");
         card.className = "card";
         card.innerHTML = `
@@ -400,21 +407,33 @@
           <p style="font-size:0.9rem; color:var(--text-secondary); margin:0.5rem 0;">
             Added: ${test.createdAt ? new Date(test.createdAt).toLocaleDateString('en-IN') : '—'}
           </p>
-          <button class="btn btn-free" style="margin-top:1rem; width:100%;"
-                  onclick="startSpecificFreeTest('${test.testId}')">
+          <button class="btn btn-free start-free-btn" style="margin-top:1rem; width:100%;"
+                  data-test-id="${test.testId}">
             Start Test (${test.totalQuestions} Qs)
           </button>
         `;
         container.appendChild(card);
       });
+
+      // Event delegation for all start buttons
+      container.addEventListener("click", (e) => {
+        const btn = e.target.closest(".start-free-btn");
+        if (btn) {
+          const testId = btn.getAttribute("data-test-id");
+          console.log("[FREE] Start button clicked for test ID:", testId);
+          startSpecificFreeTest(testId);
+        }
+      });
+
     } catch (err) {
-      console.error(err);
-      container.innerHTML = `<p style='color:var(--danger); text-align:center;'>Error loading tests: ${err.message}</p>`;
+      console.error("[FREE] Error loading list:", err);
+      container.innerHTML = `<p style='color:var(--danger); text-align:center;'>Error: ${err.message}</p>`;
     }
   }
 
   // ─── Load Specific Free Test by ID ──────────────────────────
   async function startSpecificFreeTest(testId) {
+    console.log("[FREE] Starting specific test ID:", testId);
     resetUIForNewTest();
     document.getElementById("freeTestsList").classList.add("hidden");
     document.getElementById("testSection").classList.remove("hidden");
@@ -431,13 +450,25 @@
     container.innerHTML  = "";
 
     try {
-      const res = await fetch(`${API_URL}/free/test/${testId}`);
-      if (!res.ok) throw new Error("Failed to load test");
+      const url = `${API_URL}/free/test/${testId}`;
+      console.log("[FREE] Fetching specific test:", url);
+      const res = await fetch(url);
+      console.log("[FREE] Specific test status:", res.status);
+
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`HTTP ${res.status} - ${errText}`);
+      }
 
       const data = await res.json();
+      console.log("[FREE] Specific test data:", data);
+
+      if (!data.questions?.length) {
+        throw new Error("No questions found in this test");
+      }
 
       currentTestId = data.testId;
-      titleEl.textContent = data.title || "Free BPSC Practice Test";
+      titleEl.textContent = data.title || "Free UPSC Practice Test";
       infoEl.textContent = `Total Questions: ${data.totalQuestions}`;
       persistEl.textContent = data.note || "Persistent free practice test";
       persistEl.classList.remove("hidden");
@@ -455,31 +486,23 @@
         container.appendChild(div);
 
         div.querySelectorAll("input").forEach(inp => {
-          inp.onchange = () => {
+          inp.addEventListener("change", () => {
             userAnswers[q._id] = inp.value;
             div.querySelectorAll(".option").forEach(l => l.classList.remove("selected"));
             inp.parentElement.classList.add("selected");
-          };
+          });
         });
       });
 
       statusEl.classList.add("hidden");
       submitBtn.classList.remove("hidden");
 
-      // Optional: load leaderboard if exists
       await loadLeaderboardOrRank();
     } catch (err) {
-      console.error(err);
-      statusEl.textContent = "Failed to load this test.";
+      console.error("[FREE] Error loading specific test:", err);
+      statusEl.textContent = `Failed to load test: ${err.message}`;
       statusEl.classList.add("status-no-test");
     }
-  }
-
-  // ─── Load Paid Test (unchanged from previous version) ───────
-  async function loadTest() {
-    // ... your existing paid test loading logic here ...
-    // (keep the same as in the previous version you had)
-    // including handling of not_started, active, archived statuses
   }
 
   // ─── Submit Test (supports both free & paid) ────────────────
