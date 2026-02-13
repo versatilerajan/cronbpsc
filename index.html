@@ -457,90 +457,73 @@
 
 </div><!-- /container -->
 
-<!-- ══════════════════════════════════════════════════════════
-     APPLICATION SCRIPT
-══════════════════════════════════════════════════════════ -->
+
 <script type="module">
   const {
     initializeApp, getAnalytics, getAuth, signInWithPopup,
     GoogleAuthProvider, onAuthStateChanged, signOut
   } = window.firebaseModules;
 
-  /* ── Firebase init ── */
   const firebaseConfig = {
-    apiKey:            "AIzaSyALLdLzpaEE6B0rp4R_M1XTLBq6zHfZcf0",
-    authDomain:        "cronbpsc.firebaseapp.com",
-    projectId:         "cronbpsc",
-    storageBucket:     "cronbpsc.firebasestorage.app",
+    apiKey: "AIzaSyALLdLzpaEE6B0rp4R_M1XTLBq6zHfZcf0",
+    authDomain: "cronbpsc.firebaseapp.com",
+    projectId: "cronbpsc",
+    storageBucket: "cronbpsc.firebasestorage.app",
     messagingSenderId: "66923138072",
-    appId:             "1:66923138072:web:ea79ce45bc8c7c15c2476d",
-    measurementId:     "G-Y37J7BL805"
+    appId: "1:66923138072:web:ea79ce45bc8c7c15c2476d",
+    measurementId: "G-Y37J7BL805"
   };
-
-  const app      = initializeApp(firebaseConfig);
+  const app = initializeApp(firebaseConfig);
   getAnalytics(app);
-  const auth     = getAuth(app);
+  const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
-
   const API_URL = "https://cronuserbackend.vercel.app";
 
-  /* ── App state ── */
-  let currentUser     = null;
-  let currentTestId   = null;
-  let isFreeMode      = false;
-  let userAnswers     = {};
-  let isLateAttempt   = false;
+  let currentUser = null;
+  let currentTestId = null;
+  let isFreeMode = false;
+  let userAnswers = {};
+  let isLateAttempt = false;
 
-  /* ─────────────────────────────────────────────────
-     SECTION HELPERS — show exactly one section at a time
-  ───────────────────────────────────────────────── */
   const SECTIONS = [
     "sectionHome", "sectionFreeList", "sectionPaidLogin",
     "sectionPaidList", "sectionTest", "sectionResult", "sectionLeaderboard"
   ];
 
   function showOnly(...ids) {
-    SECTIONS.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.classList.add("hidden");
-    });
-    ids.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.classList.remove("hidden");
-    });
+    SECTIONS.forEach(id => document.getElementById(id)?.classList.add("hidden"));
+    ids.forEach(id => document.getElementById(id)?.classList.remove("hidden"));
   }
 
   function resetTestState() {
     currentTestId = null;
-    userAnswers   = {};
+    userAnswers = {};
     isLateAttempt = false;
     document.getElementById("questionsContainer").innerHTML = "";
-    document.getElementById("statusMessage").className = "status-message hidden";
-    document.getElementById("statusMessage").textContent = "";
-    document.getElementById("lateWarning").classList.add("hidden");
-    document.getElementById("btnSubmitTest").classList.add("hidden");
-    document.getElementById("btnReviewTest").classList.add("hidden");
-    document.getElementById("submitMessage").classList.add("hidden");
-    document.getElementById("persistentNote").classList.add("hidden");
-    document.getElementById("reviewContainer").classList.add("hidden");
+    document.getElementById("statusMessage")?.classList.add("hidden");
+    document.getElementById("lateWarning")?.classList.add("hidden");
+    document.getElementById("btnSubmitTest")?.classList.add("hidden");
+    document.getElementById("btnReviewTest")?.classList.add("hidden");
+    document.getElementById("submitMessage")?.classList.add("hidden");
+    document.getElementById("persistentNote")?.classList.add("hidden");
+    document.getElementById("reviewContainer")?.classList.add("hidden");
     document.getElementById("leaderboard").innerHTML = "";
   }
 
-  /* ─────────────────────────────────────────────────
-     AUTH STATE
-  ───────────────────────────────────────────────── */
+  // ─── Get current date in YYYY-MM-DD (IST) ───
+  function getTodayIST() {
+    const now = new Date();
+    const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+    const nowIST = new Date(now.getTime() + IST_OFFSET_MS);
+    return nowIST.toISOString().split("T")[0];
+  }
+
   onAuthStateChanged(auth, (user) => {
     currentUser = user;
-
     if (user) {
-      document.getElementById("userDisplay").textContent =
-        user.displayName || user.email.split("@")[0];
+      document.getElementById("userDisplay").textContent = user.displayName || user.email.split("@")[0];
       document.getElementById("btnLogout").classList.remove("hidden");
-
-      /* If the paid-login gate is currently visible, move straight to paid list */
-      const loginVisible = !document.getElementById("sectionPaidLogin").classList.contains("hidden");
-      if (loginVisible) {
-        document.getElementById("authMessage").innerHTML = "";
+      if (!document.getElementById("sectionPaidLogin").classList.contains("hidden")) {
         showPaidTestsList();
       }
     } else {
@@ -550,9 +533,7 @@
     }
   });
 
-  /* ─────────────────────────────────────────────────
-     NAV — Home
-  ───────────────────────────────────────────────── */
+  // ─── Home buttons ───
   document.getElementById("btnBrowseFree").addEventListener("click", () => {
     isFreeMode = true;
     showOnly("sectionFreeList");
@@ -569,336 +550,245 @@
     }
   });
 
-  /* ─────────────────────────────────────────────────
-     NAV — Back buttons
-  ───────────────────────────────────────────────── */
-  document.getElementById("btnBackFromFreeList").addEventListener("click", () => {
-    showOnly("sectionHome");
-  });
-
-  document.getElementById("btnBackFromLogin").addEventListener("click", () => {
-    document.getElementById("authMessage").innerHTML = "";
-    showOnly("sectionHome");
-  });
-
-  document.getElementById("btnBackFromPaidList").addEventListener("click", () => {
-    showOnly("sectionHome");
-  });
-
-  document.getElementById("btnBackFromTest").addEventListener("click", () => {
+  // Back buttons
+  document.getElementById("btnBackFromFreeList")?.addEventListener("click", () => showOnly("sectionHome"));
+  document.getElementById("btnBackFromLogin")?.addEventListener("click", () => showOnly("sectionHome"));
+  document.getElementById("btnBackFromPaidList")?.addEventListener("click", () => showOnly("sectionHome"));
+  document.getElementById("btnBackFromTest")?.addEventListener("click", () => {
     resetTestState();
-    if (isFreeMode) {
-      showOnly("sectionFreeList");
-      /* Re-render the list (already loaded, just show) */
-    } else {
-      showOnly("sectionPaidList");
-    }
+    showOnly(isFreeMode ? "sectionFreeList" : "sectionPaidList");
   });
-
-  document.getElementById("btnResultBack").addEventListener("click", () => {
+  document.getElementById("btnResultBack")?.addEventListener("click", () => {
     resetTestState();
     showOnly("sectionHome");
   });
 
-  /* ─────────────────────────────────────────────────
-     AUTH — Google Login
-  ───────────────────────────────────────────────── */
-  document.getElementById("btnGoogleLogin").addEventListener("click", async () => {
-    document.getElementById("authMessage").innerHTML =
-      `<span style="color:var(--text-secondary);">Opening Google sign-in…</span>`;
+  // Google Login
+  document.getElementById("btnGoogleLogin")?.addEventListener("click", async () => {
     try {
       await signInWithPopup(auth, provider);
-      /* onAuthStateChanged callback will handle the redirect */
     } catch (err) {
-      document.getElementById("authMessage").innerHTML =
-        `<span style="color:var(--danger);">Login failed: ${err.message}</span>`;
+      document.getElementById("authMessage").innerHTML = `<span style="color:var(--danger);">Login failed: ${err.message}</span>`;
     }
   });
 
-  /* ─────────────────────────────────────────────────
-     AUTH — Logout
-  ───────────────────────────────────────────────── */
-  document.getElementById("btnLogout").addEventListener("click", async () => {
+  document.getElementById("btnLogout")?.addEventListener("click", async () => {
     await signOut(auth);
     resetTestState();
     showOnly("sectionHome");
   });
 
-  /* ─────────────────────────────────────────────────
-     FREE — Load tests list
-  ───────────────────────────────────────────────── */
+  // ─── Load Free Tests List ─── (filter by date)
   async function loadFreeTestsList() {
     const grid = document.getElementById("freeTestsGrid");
-    grid.innerHTML = `<div class="loader">Loading free tests</div>`;
+    grid.innerHTML = `<div class="loader">Loading free tests...</div>`;
 
     try {
-      const res  = await fetch(`${API_URL}/free/tests`);
+      const res = await fetch(`${API_URL}/free/tests`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
 
       grid.innerHTML = "";
 
       if (!data.success || !data.tests?.length) {
-        grid.innerHTML = `<p style="color:var(--text-secondary);">No free tests available right now.</p>`;
+        grid.innerHTML = `<p>No free tests available.</p>`;
         return;
       }
 
-      data.tests.forEach(test => {
+      const today = getTodayIST();
+
+      const visibleTests = data.tests.filter(test => {
+        // If no date or "—" → always show (persistent)
+        if (!test.date || test.date === "—") return true;
+        // Show only if test date ≤ today
+        return test.date <= today;
+      });
+
+      if (visibleTests.length === 0) {
+        grid.innerHTML = `<p>No free tests available yet for today (${today}).</p>`;
+        return;
+      }
+
+      visibleTests.forEach(test => {
         const card = document.createElement("div");
         card.className = "test-card";
         card.innerHTML = `
-          <h3>${escHtml(test.title)}</h3>
+          <h3>${test.title || "Free Practice Test"}</h3>
           <div class="test-card-meta">
-            <span><strong>Date:</strong> ${test.date || "—"}</span>
+            <span><strong>Date:</strong> ${test.date || "Anytime"}</span>
             <span><strong>Questions:</strong> ${test.totalQuestions}</span>
-            <span style="font-size:0.82rem;">Added: ${test.createdAt ? new Date(test.createdAt).toLocaleDateString("en-IN") : "—"}</span>
           </div>
-          <button class="btn btn-free start-free-btn" data-test-id="${escHtml(test.testId)}">
+          <button class="btn btn-free start-free-btn" data-test-id="${test.testId}">
             Start Test
           </button>
         `;
         grid.appendChild(card);
       });
-
     } catch (err) {
-      grid.innerHTML = `<p style="color:var(--danger);">Could not load tests: ${err.message}</p>`;
+      grid.innerHTML = `<p style="color:var(--danger);">Error loading free tests: ${err.message}</p>`;
     }
   }
 
-  /* Delegated click for free test cards */
-  document.getElementById("freeTestsGrid").addEventListener("click", (e) => {
+  document.getElementById("freeTestsGrid")?.addEventListener("click", e => {
     const btn = e.target.closest(".start-free-btn");
     if (btn) startFreeTest(btn.dataset.testId);
   });
 
-  /* ─────────────────────────────────────────────────
-     FREE — Start a specific test
-  ───────────────────────────────────────────────── */
+  // ─── Start Free Test ───
   async function startFreeTest(testId) {
     resetTestState();
     isFreeMode = true;
     showOnly("sectionTest");
-
     document.getElementById("testTitle").textContent = "Loading…";
-    document.getElementById("testInfo").textContent  = "";
-
-    const statusEl = document.getElementById("statusMessage");
-    statusEl.textContent = "Fetching test…";
-    statusEl.className   = "status-message";
 
     try {
-      const res  = await fetch(`${API_URL}/free/test/${testId}`);
+      const res = await fetch(`${API_URL}/free/test/${testId}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
 
       currentTestId = data.testId;
-      document.getElementById("testTitle").textContent = data.title || "Free UPSC Practice Test";
-      document.getElementById("testInfo").textContent  = `Total Questions: ${data.totalQuestions}`;
+      document.getElementById("testTitle").textContent = data.title || "Free Practice Test";
+      document.getElementById("testInfo").textContent = `Total Questions: ${data.totalQuestions}`;
 
       if (data.note) {
         document.getElementById("persistentNote").textContent = data.note;
         document.getElementById("persistentNote").classList.remove("hidden");
       }
 
-      statusEl.className = "status-message hidden";
       renderQuestions(data.questions);
       document.getElementById("btnSubmitTest").classList.remove("hidden");
-      await loadLeaderboard();
-
     } catch (err) {
-      statusEl.textContent = `Failed to load test: ${err.message}`;
-      statusEl.className   = "status-message status-no-test";
+      document.getElementById("testInfo").textContent = `Failed to load test: ${err.message}`;
     }
   }
 
-  /* ─────────────────────────────────────────────────
-     PAID — Load tests list  (shows after login)
-  ───────────────────────────────────────────────── */
-  function showPaidTestsList() {
-    showOnly("sectionPaidList");
-    loadPaidTestsList();
-  }
-
+  // ─── Load Paid Tests List ─── (now date-aware)
   async function loadPaidTestsList() {
     const grid = document.getElementById("paidTestsGrid");
-    grid.innerHTML = `<div class="loader">Loading paid tests</div>`;
+    grid.innerHTML = `<div class="loader">Loading paid tests...</div>`;
 
     try {
       const token = await currentUser.getIdToken();
-      const res   = await fetch(`${API_URL}/user/tests`, {
+      const res = await fetch(`${API_URL}/user/today-test`, {
         headers: { "Authorization": `Bearer ${token}` }
       });
-
-      /* Gracefully handle endpoints that may not yet return a list */
-      if (res.status === 404) {
-        /* Fallback: just offer "Today's Test" */
-        grid.innerHTML = "";
-        const card = document.createElement("div");
-        card.className = "test-card";
-        card.innerHTML = `
-          <h3>Today's Paid Test</h3>
-          <div class="test-card-meta">
-            <span><strong>Date:</strong> ${new Date().toLocaleDateString("en-IN")}</span>
-            <span><strong>Window:</strong> 24 hours</span>
-          </div>
-          <button class="btn btn-paid start-paid-btn" data-test-id="today">
-            Open Test
-          </button>
-        `;
-        grid.appendChild(card);
-        return;
-      }
-
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
 
       grid.innerHTML = "";
 
-      const tests = data.tests || (data.testId ? [data] : []);
-
-      if (!tests.length) {
-        grid.innerHTML = `<p style="color:var(--text-secondary);">No paid tests available right now.</p>`;
+      if (res.status === 401) {
+        grid.innerHTML = `<p>Please log in to view paid tests.</p>`;
         return;
       }
-
-      tests.forEach(test => {
-        const statusBadge = test.status === "active"
-          ? `<span style="color:var(--success); font-weight:700;">● Live</span>`
-          : test.status === "not_started"
-          ? `<span style="color:var(--accent);">○ Upcoming</span>`
-          : `<span style="color:#8b5cf6;">✓ Archived</span>`;
-
-        const card = document.createElement("div");
-        card.className = "test-card";
-        card.innerHTML = `
-          <h3>${escHtml(test.title || "Daily Paid Test")}</h3>
-          <div class="test-card-meta">
-            <span><strong>Date:</strong> ${test.date || new Date().toLocaleDateString("en-IN")}</span>
-            <span><strong>Questions:</strong> ${test.totalQuestions || "—"}</span>
-            <span>${statusBadge}</span>
-          </div>
-          <button class="btn btn-paid start-paid-btn"
-                  data-test-id="${escHtml(test.testId || "today")}">
-            Open Test
-          </button>
-        `;
-        grid.appendChild(card);
-      });
-
-    } catch (err) {
-      grid.innerHTML = `<p style="color:var(--danger);">Could not load tests: ${err.message}</p>`;
-    }
-  }
-
-  /* Delegated click for paid test cards */
-  document.getElementById("paidTestsGrid").addEventListener("click", (e) => {
-    const btn = e.target.closest(".start-paid-btn");
-    if (btn) startPaidTest(btn.dataset.testId);
-  });
-
-  /* ─────────────────────────────────────────────────
-     PAID — Start a specific test
-  ───────────────────────────────────────────────── */
-  async function startPaidTest(testId) {
-    resetTestState();
-    isFreeMode = false;
-    showOnly("sectionTest");
-
-    document.getElementById("testTitle").textContent = "Loading…";
-    document.getElementById("testInfo").textContent  = "";
-
-    const statusEl = document.getElementById("statusMessage");
-    statusEl.textContent = "Fetching test…";
-    statusEl.className   = "status-message";
-
-    try {
-      const token = await currentUser.getIdToken();
-
-      /* Use today-test endpoint; if backend gains per-id endpoint, swap here */
-      const endpoint = testId === "today"
-        ? `${API_URL}/user/today-test`
-        : `${API_URL}/user/test/${testId}`;
-
-      const res  = await fetch(endpoint, {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
 
       if (res.status === 404) {
-        statusEl.textContent = "No paid test available today.";
-        statusEl.className   = "status-message status-no-test";
-        document.getElementById("testTitle").textContent = "No Test Today";
+        grid.innerHTML = `<p>No paid test available today.</p>`;
         return;
       }
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      currentTestId = data.testId;
 
       if (data.status === "not_started") {
-        statusEl.textContent = `Test begins at 00:00 IST on ${new Date().toLocaleDateString("en-IN")}`;
-        statusEl.className   = "status-message status-not-started";
-        document.getElementById("testTitle").textContent = data.title || "Upcoming Paid Test";
+        grid.innerHTML = `<p>Today's test not started yet (${data.message || ""})</p>`;
         return;
       }
 
       if (data.status === "archived") {
-        statusEl.textContent = "This test has ended. You can review your attempt below.";
-        statusEl.className   = "status-message status-archived";
-        document.getElementById("testTitle").textContent = data.title || "Archived Test";
-        document.getElementById("testInfo").textContent  =
-          "Ended: " + new Date(data.endTimeIST).toLocaleString("en-IN");
-        document.getElementById("btnReviewTest").classList.remove("hidden");
-        await loadLeaderboard();
+        grid.innerHTML = `<p>Test has ended. Review available.</p>`;
+        const card = document.createElement("div");
+        card.className = "test-card";
+        card.innerHTML = `
+          <h3>${data.title || "Archived Paid Test"}</h3>
+          <div class="test-card-meta">
+            <span><strong>Date:</strong> ${getTodayIST()}</span>
+          </div>
+          <button class="btn btn-paid start-paid-btn" data-test-id="${data.testId}">
+            Review Test
+          </button>
+        `;
+        grid.appendChild(card);
         return;
       }
 
-      if (data.status !== "active") {
-        statusEl.textContent = "Test not available right now.";
-        statusEl.className   = "status-message status-no-test";
-        return;
-      }
-
-      /* Active test */
-      statusEl.className = "status-message hidden";
-      document.getElementById("testTitle").textContent = data.title || "UPSC Daily Paid Test";
-      document.getElementById("testInfo").textContent  = `Total Questions: ${data.totalQuestions}`;
-
-      renderQuestions(data.questions);
-      document.getElementById("btnSubmitTest").classList.remove("hidden");
-      await loadLeaderboard();
-
+      // Active test
+      const card = document.createElement("div");
+      card.className = "test-card";
+      card.innerHTML = `
+        <h3>${data.title || "Today's Paid Test"}</h3>
+        <div class="test-card-meta">
+          <span><strong>Date:</strong> ${getTodayIST()}</span>
+          <span><strong>Questions:</strong> ${data.totalQuestions}</span>
+        </div>
+        <button class="btn btn-paid start-paid-btn" data-test-id="${data.testId}">
+          Start Test
+        </button>
+      `;
+      grid.appendChild(card);
     } catch (err) {
-      statusEl.textContent = `Error loading test: ${err.message}`;
-      statusEl.className   = "status-message status-no-test";
+      grid.innerHTML = `<p style="color:var(--danger);">Error: ${err.message}</p>`;
     }
   }
 
-  /* ─────────────────────────────────────────────────
-     RENDER QUESTIONS (shared by free & paid)
-  ───────────────────────────────────────────────── */
+  document.getElementById("paidTestsGrid")?.addEventListener("click", e => {
+    const btn = e.target.closest(".start-paid-btn");
+    if (btn) startPaidTest(btn.dataset.testId);
+  });
+
+  // ─── Start Paid Test ───
+  async function startPaidTest(testId) {
+    resetTestState();
+    isFreeMode = false;
+    showOnly("sectionTest");
+    document.getElementById("testTitle").textContent = "Loading…";
+
+    try {
+      const token = await currentUser.getIdToken();
+      const res = await fetch(`${API_URL}/user/today-test`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+
+      currentTestId = data.testId;
+      document.getElementById("testTitle").textContent = data.title || "Paid Test";
+      document.getElementById("testInfo").textContent = `Total Questions: ${data.totalQuestions}`;
+
+      if (data.status === "not_started") {
+        document.getElementById("statusMessage").textContent = data.message;
+        document.getElementById("statusMessage").classList.remove("hidden");
+        return;
+      }
+
+      if (data.status === "archived") {
+        document.getElementById("statusMessage").textContent = data.message;
+        document.getElementById("statusMessage").classList.remove("hidden");
+        document.getElementById("btnReviewTest").classList.remove("hidden");
+        return;
+      }
+
+      renderQuestions(data.questions || []);
+      document.getElementById("btnSubmitTest").classList.remove("hidden");
+    } catch (err) {
+      document.getElementById("testInfo").textContent = `Error: ${err.message}`;
+    }
+  }
+
+  // ─── Render Questions ───
   function renderQuestions(questions) {
     const container = document.getElementById("questionsContainer");
     container.innerHTML = "";
-
     questions.forEach(q => {
       const div = document.createElement("div");
       div.className = "question";
       div.innerHTML = `
-        <h3>Q${q.questionNumber || "?"}. ${escHtml(q.questionStatement || "")}</h3>
-        <label class="option"><input type="radio" name="q_${q._id}" value="option1"> ${escHtml(q.options?.option1 || "—")}</label>
-        <label class="option"><input type="radio" name="q_${q._id}" value="option2"> ${escHtml(q.options?.option2 || "—")}</label>
-        <label class="option"><input type="radio" name="q_${q._id}" value="option3"> ${escHtml(q.options?.option3 || "—")}</label>
-        <label class="option"><input type="radio" name="q_${q._id}" value="option4"> ${escHtml(q.options?.option4 || "—")}</label>
+        <h3>Q${q.questionNumber || "?"}. ${q.questionStatement || ""}</h3>
+        <label class="option"><input type="radio" name="q_${q._id}" value="option1"> ${q.options?.option1 || "—"}</label>
+        <label class="option"><input type="radio" name="q_${q._id}" value="option2"> ${q.options?.option2 || "—"}</label>
+        <label class="option"><input type="radio" name="q_${q._id}" value="option3"> ${q.options?.option3 || "—"}</label>
+        <label class="option"><input type="radio" name="q_${q._id}" value="option4"> ${q.options?.option4 || "—"}</label>
       `;
       container.appendChild(div);
-
-      div.querySelectorAll("input[type=radio]").forEach(inp => {
-        inp.addEventListener("change", () => {
-          userAnswers[q._id] = inp.value;
-          div.querySelectorAll(".option").forEach(l => l.classList.remove("selected"));
-          inp.parentElement.classList.add("selected");
-        });
-      });
     });
   }
 
